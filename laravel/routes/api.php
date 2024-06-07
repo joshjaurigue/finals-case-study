@@ -1,28 +1,27 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PatientController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\MedicalRecordController;
 use App\Http\Controllers\SpecializationController;
-use App\Http\Controllers\UserController;
-use App\Http\Middleware\PatientMiddleware;
-use App\Http\Middleware\DoctorMiddleware;
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\DoctorMiddleware;
+use App\Http\Middleware\PatientMiddleware;
 
 
-
-
-// Authentication
+// Authentication routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
-Route::middleware([AdminMiddleware::class])->group(function () {
+// Admin routes
+Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::get('users', [UserController::class, 'index']); 
+    Route::get('dashboard', [UserController::class, 'getCounts']);
     Route::post('users', [UserController::class, 'store']);
     Route::get('users/{id}', [UserController::class, 'show']);
     Route::put('users/{id}', [UserController::class, 'update']);
@@ -33,7 +32,8 @@ Route::middleware([AdminMiddleware::class])->group(function () {
     Route::delete('specializations/{id}', [SpecializationController::class, 'destroy']);
 });
 
-Route::middleware([DoctorMiddleware::class])->group(function () {
+// Doctor routes
+Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () {
     Route::get('patients', [PatientController::class, 'index']);
     Route::put('patients/{id}', [PatientController::class, 'update']);
     Route::get('doctors', [DoctorController::class, 'index']);
@@ -52,7 +52,8 @@ Route::middleware([DoctorMiddleware::class])->group(function () {
    
 });
 
-Route::middleware([PatientMiddleware::class])->group(function () {
+// Patient routes
+Route::middleware(['auth:sanctum', PatientMiddleware::class])->group(function () {
     Route::get('patients/{id}', [PatientController::class, 'show']);
     Route::get('appointments', [AppointmentController::class, 'index']);
     Route::post('appointments', [AppointmentController::class, 'store']);

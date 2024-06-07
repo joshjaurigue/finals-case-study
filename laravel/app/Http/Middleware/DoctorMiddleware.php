@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Illuminate\Support\Facades\Auth;
 class DoctorMiddleware
 {
     /**
@@ -15,9 +15,16 @@ class DoctorMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role !== 'doctor') {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        // Check if the user is authenticated
+        if (Auth::check()) {
+            // Check if the authenticated user has the 'admin' role
+            if (Auth::user()->role === 'doctor') {
+                return $next($request);
+            } else {
+                return response()->json(['message' => 'Forbidden: You do not have doctor access.'], 403);
+            }
+        } else {
+            return response()->json(['message' => 'Unauthorized: Please log in.'], 401);
         }
-        return $next($request);
     }
 }

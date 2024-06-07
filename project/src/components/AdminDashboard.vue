@@ -93,15 +93,66 @@
         </div>
       </div>
     </nav>
+    <div class="container mt-4">
+    <h1>Admin Dashboard</h1>
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card text-black bg-light mb-3">
+          <div class="card-header">Total Users</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ counts.totalUsers }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-black bg-light mb-3">
+          <div class="card-header">Total Doctors</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ counts.totalDoctors }}</h5>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-black bg-light mb-3">
+          <div class="card-header">Total Patients</div>
+          <div class="card-body">
+            <h5 class="card-title">{{ counts.totalPatients }}</h5>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   </template>
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
+  import axios from '@/axios';
     
 
  export default {
+  data() {
+    return {
+      counts: {
+        totalUsers: 0,
+        totalDoctors: 0,
+        totalPatients: 0
+      }
+    };
+  },
+  created() {
+    this.fetchCounts();
+  },
   methods: {
+    fetchCounts() {
+      axios.get(`${BASE_URL}/dashboard`)
+        .then(response => {
+          console.log(response.data);
+          this.counts = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching counts:', error);
+        });
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
@@ -120,4 +171,8 @@
   }
 };
   </script>
-  
+  <style scoped>
+  .card {
+    max-width: 18rem;
+  }
+  </style>
