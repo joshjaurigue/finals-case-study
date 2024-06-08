@@ -9,26 +9,47 @@ class MedicalRecordController extends Controller
 {
     public function index()
     {
-        // Your teammates will implement the logic to get all medical records here.
-    }
-
-    public function store(Request $request)
-    {
-        // Your teammates will implement the logic to create a new medical record here.
+        $this->authorize('viewAny', MedicalRecord::class);
+        return MedicalRecord::all();
     }
 
     public function show($id)
     {
-        // Your teammates will implement the logic to get a single medical record here.
+        $record = MedicalRecord::findOrFail($id);
+        $this->authorize('view', $record);
+        return $record;
+    }
+
+    public function store(Request $request)
+    {
+        $this->authorize('create', MedicalRecord::class);
+        $validated = $request->validate([
+            'patient_id' => 'required|exists:users,id',
+            'doctor_id' => 'nullable|exists:users,id',
+            'record' => 'required|string',
+        ]);
+
+        return MedicalRecord::create($validated);
     }
 
     public function update(Request $request, $id)
     {
-        // Your teammates will implement the logic to update a medical record here.
+        $record = MedicalRecord::findOrFail($id);
+        $this->authorize('update', $record);
+
+        $validated = $request->validate([
+            'record' => 'required|string',
+        ]);
+
+        $record->update($validated);
+        return $record;
     }
 
     public function destroy($id)
     {
-        // Your teammates will implement the logic to delete a medical record here.
+        $record = MedicalRecord::findOrFail($id);
+        $this->authorize('delete', $record);
+        $record->delete();
+        return response()->noContent();
     }
 }
