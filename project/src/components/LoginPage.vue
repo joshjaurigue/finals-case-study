@@ -72,15 +72,15 @@ export default {
               });
               if (response.status === 201) {
                   const { access_token, user, additional_data } = response.data;
-                  localStorage.setItem('auth_token', access_token);
-                  localStorage.setItem('user', JSON.stringify(user));
+                  sessionStorage.setItem('auth_token', access_token);
+                  sessionStorage.setItem('user', JSON.stringify(user));
                   // Store doctor_id or patient_id if available
                     if (additional_data) {
                         if (additional_data.doctor_id) {
-                            localStorage.setItem('doctor_id', additional_data.doctor_id);
+                            sessionStorage.setItem('doctor_id', additional_data.doctor_id);
                         }
                         if (additional_data.patient_id) {
-                            localStorage.setItem('patient_id', additional_data.patient_id);
+                            sessionStorage.setItem('patient_id', additional_data.patient_id);
                         }
                     }
                   Swal.fire({

@@ -93,18 +93,111 @@
         </div>
       </div>
     </nav>
-
-    <p>This is a page</p>
+    
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-6">
+        <form @submit.prevent="updateUser" class="shadow p-4">
+          <h4 class="mb-4 text-center">Edit User</h4>
+          <div class="mb-3">
+            <input type="text" class="form-control" v-model="name" placeholder="Enter your Name" @input="clearErrors('name')">
+            <div class="text-danger" v-if="errors?.name">{{ errors.name[0] }}</div>
+          </div>
+          <div class="mb-3">
+            <input type="email" class="form-control" v-model="email" placeholder="Enter your Email" @input="clearErrors('email')">
+            <div class="text-danger" v-if="errors?.email">{{ errors.email[0] }}</div>
+          </div>
+          <div class="mb-3">
+            <select class="form-select" v-model="role" @change="clearErrors('role')">
+              <option value="" disabled>Select Role</option>
+              <option value="admin">Admin</option>
+              <option value="doctor">Doctor</option>
+              <option value="patient">Patient</option>
+            </select>
+            <div class="text-danger" v-if="errors?.role">{{ errors.role[0] }}</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-50 m-1">Update User</button>
+          <router-link :to="{name: 'user-list'}" class="btn btn-success btn-sm  w-50 m-1">Go Back</router-link>
+        </form>
+      </div>
+    </div>
   </template>
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
-    
+  import axios from '@/axios';
+  import Swal from 'sweetalert2'; 
 
- export default {
-  methods: {
-    logoutUser() {
+  export default {
+    name: 'EditUserPage',
+    data() {
+      return {
+        name: '',
+        email: '',
+        role: '',
+        errors: {}
+      };
+    },
+    created() {
+      this.fetchUser();
+    },
+    methods: {
+      async fetchUser() {
+      try {
+        const userId = this.$route.params.id;
+        const response = await axios.get(`${BASE_URL}/users/${userId}`);
+        const user = response.data.user_data;
+        this.name = user.name;
+        this.email = user.email;
+        this.role = user.role;
+        console.log(user);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    },
+      clearErrors(field) {
+        if (this.errors[field]) {
+          this.errors[field] = null;
+        }
+      },
+      async updateUser() {
+        try {
+          const userId = this.$route.params.id;
+          const response = await axios.put(`${BASE_URL}/users/${userId}`, {
+            name: this.name,
+            email: this.email,
+            role: this.role
+          });
+          if (response.status === 200) {
+            Swal.fire({
+              icon: 'success',
+              title: 'User updated successfully!',
+              text: 'You have successfully updated the user.',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              this.$router.push({ name: 'user-list' });
+            });
+          }
+        } catch (error) {
+          if (error.response && error.response.data && error.response.data.errors) {
+            this.errors = error.response.data.errors;
+            Swal.fire({
+              icon: 'error',
+              title: 'Updating User Details Failed',
+              text: 'Please check your input and try again.',
+              confirmButtonText: 'OK'
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Updating User Details Failed',
+              text: 'An unexpected error occurred. Please try again.',
+              confirmButtonText: 'OK'
+            });
+            console.error('An unexpected error occurred:', error);
+          }
+        }
+      },
+      logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       // Call the logout API
@@ -119,7 +212,7 @@
           console.error('Error logging out:', error);
         });
     }
-  }
-};
+    }
+  };
   </script>
   

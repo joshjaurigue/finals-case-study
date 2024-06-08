@@ -59,7 +59,7 @@
 
 <script>
 import { BASE_URL } from '@/config';
-  import axios from 'axios';
+import axios from '@/axios';
   
 
 export default {
@@ -70,20 +70,20 @@ computed: {
 },
 methods: {
   logoutUser() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
-    // Call the logout API
-    axios.post(`${BASE_URL}/logout`)
-      .then(() => {
-        // Clear localStorage
-        localStorage.clear();
-        // Redirect to login page
-        this.$router.push('/');
-      })
-      .catch(error => {
-        console.error('Error logging out:', error);
-      });
-  }
+      // Call the logout API
+      axios.post(`${BASE_URL}/logout`)
+        .then(() => {
+          // Clear localStorage
+          localStorage.clear();
+          // Redirect to login page
+          this.$router.push('/');
+        })
+        .catch(error => {
+          console.error('Error logging out:', error);
+        });
+    }
 }
 };
 </script>

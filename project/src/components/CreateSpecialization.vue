@@ -94,16 +94,77 @@
       </div>
     </nav>
 
-    <p>This is a page</p>
+    <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <form @submit.prevent="createSpecialization" class="shadow p-4">
+          <h4 class="mb-4 text-center">Create Specialization</h4>
+          <div class="mb-3">
+            <input type="text" class="form-control" v-model="title" placeholder="Enter specialization title">
+            <div class="text-danger" v-if="errors?.specialization_title">{{ errors.specialization_title[0] }}</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Create Specialization</button>
+        </form>
+      </div>
+    </div>
+  </div>
   </template>
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
+  import axios from '@/axios';
+  import Swal from 'sweetalert2';
     
 
  export default {
+  data() {
+    return {
+      title: '',
+      errors: {}
+    };
+  },
   methods: {
+    clearErrors(field) {
+      if (this.errors[field]) {
+        this.errors[field] = null;
+      }
+    },
+    clearForm() {
+      this.specialization_title = '';
+      
+    },
+    async createSpecialization() {
+      try {
+        await axios.post(`${BASE_URL}/specializations`, { specialization_title: this.title });
+        Swal.fire({
+          icon: 'success',
+          title: 'Specialization created successfully!',
+          text: 'You have successfully created a new specialization.',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.$router.push({ name: 'specialization-list' });
+        });
+      } catch (error) {
+        console.error('Error creating specialization:', error);
+        if (error.response && error.response.data && error.response.data.errors && error.response.data.errors.specialization_title) {
+          this.errors = error.response.data.errors;
+            
+            Swal.fire({
+            icon: 'error',
+            title: 'Specialization Creation Failed',
+            text: 'Please check your inputs and try again.',
+            confirmButtonText: 'OK'
+          });
+        } else {
+            Swal.fire({
+            icon: 'error',
+            title: 'Specialization Creation Failed',
+            text: 'An error occurred while creating the specialization. Please try again.',
+            confirmButtonText: 'OK'
+        });
+        }
+      }
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 

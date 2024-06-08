@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Patient;
-
+use App\Models\Specialization;
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -35,11 +35,13 @@ class AuthController extends Controller
 
     // Create an entry in the corresponding table based on the role
     if ($request->role === 'doctor') {
+         // Find the specialization_id where the title is "None"
+         $specialization = Specialization::where('specialization_title', 'None')->first();
         Doctor::create([
             'user_id' => $user->id,
-            'specialization_id' => 11, 
+            'specialization_id' =>  $specialization->id, 
         ]);
-    } elseif ($request->role === 'patient') {
+    } else if ($request->role === 'patient') {
         Patient::create(['user_id' => $user->id]);
     }
 

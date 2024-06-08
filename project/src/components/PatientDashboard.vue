@@ -59,7 +59,7 @@
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
+  import axios from '@/axios';
     
 
  export default {

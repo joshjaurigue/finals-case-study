@@ -32,7 +32,7 @@
                 <div class="text-danger" v-if="errors?.email">{{ errors.email[0] }}</div>
               </div>
               <div class="mb-3">
-                <input :type="passwordVisible ? 'text' : 'password'" class="form-control" v-model="password" placeholder="Enter your Password" @input="clearErrors('password')">
+                <input :type="passwordVisible ? 'text' : 'password'" class="form-control" v-model="password" placeholder="Enter your Password (Password must be 8 characters or more)" @input="clearErrors('password')">
                 <div class="text-danger" v-if="errors?.password">{{ errors.password[0] }}</div>
               </div>
               <div class="mb-3">
@@ -112,8 +112,8 @@
             });
           }
         } catch (error) {
-          if (error.response && error.response.data && error.response.data.errors) {
-            this.errors = error.response.data.errors;
+          if (error.response && error.response.data && error.response.data) {
+            this.errors = error.response.data;
             Swal.fire({
               icon: 'error',
               title: 'Registration Failed',

@@ -17,7 +17,7 @@ class SpecializationSeeder extends Seeder
     public function run()
     {
         $specializations = [
-            ['specialization_title' => 'Cardiology'],
+            ['specialization_title' => 'None'],
             ['specialization_title' => 'Neurology'],
             ['specialization_title' => 'Pediatrics'],
             ['specialization_title' => 'Dermatology'],
@@ -27,7 +27,7 @@ class SpecializationSeeder extends Seeder
             ['specialization_title' => 'Oncology'],
             ['specialization_title' => 'Urology'],
             ['specialization_title' => 'Psychiatry'],
-            ['specialization_title' => 'None']
+            ['specialization_title' => 'Cardiology']
         ];
 
         foreach ($specializations as $specialization) {

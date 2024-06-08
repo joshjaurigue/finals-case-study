@@ -87,23 +87,97 @@
               </ul>
             </li>
           </ul>
-    
+          
           <!-- Logout Button -->
           <button class="btn btn-outline-danger" @click="logoutUser">Logout</button>
         </div>
       </div>
     </nav>
 
-    <p>This is a page</p>
+    <div>
+    <h2>Specialization List</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="specialization in specializations" :key="specialization.id">
+          <td>{{ specialization.id }}</td>
+          <td>{{ specialization.specialization_title }}</td>
+          <td>
+            <router-link :to="{name: 'edit-specialization', params: {id:specialization.id}}" class="btn btn-warning btn-sm">Edit</router-link>
+              <button class="btn btn-danger btn-sm" @click="deleteSpecialization(specialization.id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+    
   </template>
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
-    
+  import axios from '@/axios';
+  import Swal from 'sweetalert2';    
 
- export default {
-  methods: {
+  export default {
+    data() {
+        return {
+          specializations: []
+        };
+    },
+    mounted() {
+      this.fetchSpecializations();
+    },
+    methods: {
+      async fetchSpecializations() {
+        try {
+          const response = await axios.get(`${BASE_URL}/specializations`);
+          this.specializations = response.data;
+        } catch (error) {
+          console.error('Error fetching specializations:', error);
+        }
+    },
+    deleteSpecialization(specializationId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.delete(`${BASE_URL}/specializations/${specializationId}`)
+                    .then(response => {
+                        console.log(response.data.message);
+                        // Handle successful deletion, e.g., update the UI or remove the item from the list
+                        this.fetchSpecializations(); // Assuming you have a method to fetch the list of specializations
+
+                        Swal.fire(
+                            'Deleted!',
+                            'Specialization has been deleted.',
+                            'success'
+                        );
+                    })
+                    .catch(error => {
+                        console.error('Error deleting specialization:', error);
+                        // Handle error, e.g., show a notification
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Specialization Deletion Failed',
+                            text: 'An error occurred while deleting the specialization. Please try again.',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            }
+        });
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
@@ -119,7 +193,7 @@
           console.error('Error logging out:', error);
         });
     }
-  }
-};
+    }
+  };
   </script>
   

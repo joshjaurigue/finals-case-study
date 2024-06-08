@@ -93,17 +93,82 @@
         </div>
       </div>
     </nav>
-
-    <p>This is a page</p>
+    <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <form @submit.prevent="updateSpecialization" class="shadow p-4">
+          <h4 class="mb-4 text-center">Edit Specialization</h4>
+          <div class="mb-3">
+            <input type="text" class="form-control" v-model="specializationTitle" placeholder="Enter specialization title">
+            <div class="text-danger" v-if="errors?.specialization_title">{{ errors.specialization_title[0] }}</div>
+          </div>
+          <button type="submit" class="btn btn-primary w-50 m-1">Update Specialization</button>
+          <router-link :to="{name: 'specialization-list'}" class="btn btn-success btn-sm  w-50 m-1">Go Back</router-link>
+        </form>
+      </div>
+    </div>
+  </div>
+  
   </template>
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
-    
+  import axios from '@/axios';
+  import Swal from 'sweetalert2';  
 
  export default {
+  data() {
+    return {
+      specializationTitle: '',
+      errors: {}
+    };
+  },
+  mounted() {
+      this.getSpecializationDetails();
+  },
   methods: {
+    
+    async getSpecializationDetails() {
+      try {
+        const response = await axios.get(`${BASE_URL}/specializations/${this.$route.params.id}`);
+        
+        this.specializationTitle = response.data.specialization_data.specialization_title;
+        console.log(this.specializationTitle);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while fetching the specialization details.',
+          confirmButtonText: 'OK'
+        });
+      }
+    },
+    async updateSpecialization() {
+      try {
+        const response = await axios.put(`${BASE_URL}/specializations/${this.$route.params.id}`, {
+          specialization_title: this.specializationTitle
+        });
+        Swal.fire({
+          icon: 'success',
+          title: 'Specialization updated successfully!',
+          text: response.data.message,
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.$router.push({ name: 'specialization-list' });
+        });
+      } catch (error) {
+        if (error.response && error.response.data.errors) {
+          this.errors = error.response.data.errors;
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Specialization Update Failed',
+            text: 'An error occurred while updating the specialization. Please try again.',
+            confirmButtonText: 'OK'
+          });
+        }
+      }
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 

@@ -94,16 +94,76 @@
       </div>
     </nav>
 
-    <p>This is a page</p>
+      <h2>User List</h2>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="user in users" :key="user.id">
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+              <router-link :to="{name: 'edit-user', params: {id:user.id}}" class="btn btn-warning btn-sm">Edit</router-link>
+              <router-link></router-link>
+              <button class="btn btn-danger btn-sm" @click="deleteUser(user.id)">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
   </template>
   
   <script>
   import { BASE_URL } from '@/config';
-    import axios from 'axios';
-    
+  import axios from '@/axios';
+  import Swal from 'sweetalert2';  
 
  export default {
+  data() {
+    return {
+      users: []
+    };
+  },
+  mounted() {
+    this.fetchUsers();
+  },
   methods: {
+    fetchUsers() {
+    axios.get(`${BASE_URL}/users`)
+      .then(response => {
+        this.users = response.data;
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
+      });
+  },
+  async deleteUser(userId) {
+      const confirmed = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, delete it!'
+      });
+
+      if (confirmed.isConfirmed) {
+        try {
+          await axios.delete(`${BASE_URL}/users/${userId}`);
+          Swal.fire('Deleted!', 'User has been deleted.', 'success');
+          this.fetchUsers(); // Refresh the list
+        } catch (error) {
+          Swal.fire('Error!', 'An error occurred while deleting the user.', 'error');
+        }
+      }
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
