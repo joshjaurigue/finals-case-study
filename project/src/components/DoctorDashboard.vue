@@ -31,7 +31,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
                 <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{name: 'view-doctor-profile-details',  params: { id: doctorId }}">My Profile</router-link></li>
+                <li><router-link class="dropdown-item" :to="{name: 'view-doctor-profile-details',  params: { id: localStorage.getItem('doctor_id') }}">My Profile</router-link></li>
                 <li><router-link class="dropdown-item" :to="{name: 'appointment-list-doctors'}">My Appointments</router-link></li>
                 <!-- Add more items as needed -->
               </ul>
@@ -78,11 +78,6 @@
     
 
  export default {
-  computed: {
-    doctorId() {
-      return localStorage.getItem('doctor_id');
-    }
-  },
   methods: {
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
