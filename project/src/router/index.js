@@ -320,8 +320,8 @@ const router = createRouter({
 // Route guard to check for authentication and authorization
 // Route guard to check for authentication and authorization
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!sessionStorage.getItem('auth_token')
-  const user = JSON.parse(sessionStorage.getItem('user'))
+  const isAuthenticated = !!localStorage.getItem('auth_token')
+  const user = JSON.parse(localStorage.getItem('user'))
   const userRole = user?.role
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
