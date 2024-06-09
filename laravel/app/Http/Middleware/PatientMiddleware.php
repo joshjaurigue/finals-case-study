@@ -18,8 +18,8 @@ class PatientMiddleware
         {
             // Check if the user is authenticated
             if (Auth::check()) {
-                // Check if the authenticated user has the 'admin' role
-                if (Auth::user()->role === 'admin') {
+                // Check if the authenticated user has the 'patient' role
+                if (Auth::user()->role === 'patient') {
                     return $next($request);
                 } else {
                     return response()->json(['message' => 'Forbidden: You do not have patient access.'], 403);
