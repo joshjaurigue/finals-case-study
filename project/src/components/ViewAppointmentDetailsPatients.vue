@@ -70,13 +70,13 @@ computed: {
 },
 methods: {
   logoutUser() {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${sessionStorage.getItem('auth_token')}`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       // Call the logout API
       axios.post(`${BASE_URL}/logout`)
         .then(() => {
-          // Clear sessionStorage
-          sessionStorage.clear();
+          // Clear localStorage
+          localStorage.clear();
           // Redirect to login page
           this.$router.push('/');
         })
