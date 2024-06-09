@@ -93,8 +93,27 @@
         </div>
       </div>
     </nav>
-
-    <p>This is a page</p>
+    <div>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <!-- Navbar contents -->
+      </div>
+    </nav>
+    <div>
+      <h1>Medical Record Details</h1>
+      <div v-if="record">
+        <p><strong>Patient ID:</strong> {{ record.patient_id }}</p>
+        <p><strong>Patient Name:</strong> {{ record.patient_name }}</p>
+        <p><strong>Date of Birth:</strong> {{ new Date(record.dob).toLocaleDateString() }}</p>
+        <p><strong>Diagnosis:</strong> {{ record.diagnosis }}</p>
+        <p><strong>Treatment:</strong> {{ record.treatment }}</p>
+        <p><strong>Billing Status:</strong> {{ record.billing_status }}</p>
+        <p><strong>Visit Dates:</strong> {{ record.visit_dates.join(', ') }}</p>
+        <!-- Add more detailed fields as needed -->
+      </div>
+      <button @click="goBack">Back to List</button>
+    </div>
+  </div>
   </template>
   
   <script>
@@ -102,10 +121,30 @@
   import axios from '@/axios';
     
 
- export default {
+  export default {
+  data() {
+    return {
+      record: null
+    };
+  },
+  mounted() {
+    this.fetchRecordDetails();
+  },
   methods: {
+    async fetchRecordDetails() {
+      const id = this.$route.params.id;
+      try {
+        const response = await axios.get(`/api/admin/medicalrecords/${id}`);
+        this.record = response.data;
+      } catch (error) {
+        console.error('There was an error fetching the medical record details:', error);
+      }
+    },
+    goBack() {
+      this.$router.push({ name: 'medical-record-list-admin' });
+    },
     logoutUser() {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       // Call the logout API
       axios.post(`${BASE_URL}/logout`)
