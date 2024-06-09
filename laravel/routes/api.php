@@ -31,17 +31,23 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::get('specializations/{id}', [SpecializationController::class, 'show']);
     Route::put('specializations/{id}', [SpecializationController::class, 'update']);
     Route::delete('specializations/{id}', [SpecializationController::class, 'destroy']);
+
+    // Doctor management routes
+    Route::get('doctors', [DoctorController::class, 'index']);
+    Route::post('doctors', [DoctorController::class, 'store']);
+    Route::get('doctors/{id}', [DoctorController::class, 'show']);
+    Route::put('doctors/{id}', [DoctorController::class, 'update']);
+    Route::delete('doctors/{id}', [DoctorController::class, 'destroy']);
 });
 
 // Doctor routes
 Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () {
     Route::get('patients', [PatientController::class, 'index']);
     Route::put('patients/{id}', [PatientController::class, 'update']);
-    Route::get('doctors', [DoctorController::class, 'index']);
-    Route::post('doctors', [DoctorController::class, 'store']);
+    
+    // Doctor profile and appointments management
     Route::get('doctors/{id}', [DoctorController::class, 'show']);
     Route::put('doctors/{id}', [DoctorController::class, 'update']);
-    Route::delete('doctors/{id}', [DoctorController::class, 'destroy']);
     Route::get('appointments', [AppointmentController::class, 'index']);
     Route::get('appointments/{id}', [AppointmentController::class, 'show']);
     Route::put('appointments/{id}', [AppointmentController::class, 'update']);
