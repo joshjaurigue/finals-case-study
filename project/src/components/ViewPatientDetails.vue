@@ -55,21 +55,112 @@
       </div>
     </div>
   </nav>
+  <div class="container mt-5">
+    <div class="card shadow-lg">
+      <div class="card-header bg-primary text-white text-center">
+        <h2>My Profile</h2>
+      </div>
+      <div class="card-body">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>First Name:</strong>
+              <p>{{ patient.firstName }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Second Name:</strong>
+              <p>{{ patient.secondName }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Last Name:</strong>
+              <p>{{ patient.lastName }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Date of Birth:</strong>
+              <p>{{ patient.dateOfBirth }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Place of Birth:</strong>
+              <p>{{ patient.placeOfBirth }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Age:</strong>
+              <p>{{ patient.age }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Sex:</strong>
+              <p>{{ patient.sex }}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Address:</strong>
+              <p>{{ patient.address }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="info-group">
+              <strong>Phone:</strong>
+              <p>{{ patient.phone }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
-  
 
 export default {
-computed: {
-  patientId() {
-    return localStorage.getItem('patient_id');
-  }
-},
-methods: {
-  logoutUser() {
+  data() {
+    return {
+      patient: {}
+    };
+  },
+  computed: {
+    patientId() {
+      return localStorage.getItem('patient_id');
+    }
+  },
+  created() {
+    this.fetchPatientProfile();
+  },
+  methods: {
+    fetchPatientProfile() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+      axios.get(`${BASE_URL}/patients/${this.patientId}`)
+        .then(response => {
+          this.patient = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching patient profile:', error);
+        });
+    },
+    logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       // Call the logout API
@@ -87,3 +178,36 @@ methods: {
 }
 };
 </script>
+
+<style scoped>
+.container {
+  max-width: 800px;
+}
+
+.card {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 20px;
+}
+
+.card-body {
+  padding: 30px;
+}
+
+.info-group {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-group p {
+  margin: 0;
+}
+</style>
+
+

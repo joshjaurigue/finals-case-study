@@ -55,21 +55,74 @@
       </div>
     </div>
   </nav>
+
+  <div class="container mt-5">
+    <div class="card shadow-lg">
+      <div class="card-header bg-primary text-white text-center">
+        <h2>My Appointments</h2>
+      </div>
+      <div class="card-body">
+        <div v-if="appointments.length">
+          <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+              <tr>
+                <th>ID</th>
+                <th>Patient ID</th>
+                <th>Doctor ID</th>
+                <th>Appointment Date</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="appointment in appointments" :key="appointment.id">
+                <td>{{ appointment.id }}</td>
+                <td>{{ appointment.patient_id }}</td>
+                <td>{{ appointment.doctor_id }}</td>
+                <td>{{ new Date(appointment.appointment_date).toLocaleDateString() }}</td>
+                <td>{{ appointment.status }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div v-else>
+          <p>No appointments found.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
-  
 
 export default {
-computed: {
-  patientId() {
-    return localStorage.getItem('patient_id');
-  }
-},
-methods: {
-  logoutUser() {
+  data() {
+    return {
+      appointments: []
+    };
+  },
+  computed: {
+    patientId() {
+      return localStorage.getItem('patient_id');
+    }
+  },
+  created() {
+    this.fetchAppointments();
+  },
+  methods: {
+    fetchAppointments() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+      
+      axios.get(`${BASE_URL}/appointments?patient_id=${this.patientId}`)
+        .then(response => {
+          this.appointments = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching appointments:', error);
+        });
+    },
+    logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       // Call the logout API
@@ -87,3 +140,18 @@ methods: {
 }
 };
 </script>
+
+<style scoped>
+.container {
+  max-width: 800px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.thead-dark th {
+  background-color: #343a40;
+  color: white;
+}
+</style>

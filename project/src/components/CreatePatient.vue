@@ -96,50 +96,61 @@
       </div>
     </nav>
 
-  <div class="container mt-5">
+  <!-- Your existing template code -->
+  <div class="container mt-5 bg-gray">
     <h2>Create Patient</h2>
     <form @submit.prevent="createPatient">
-      <div class="mb-3">
-        <label for="user_id" class="form-label">User ID</label>
-        <input type="number" class="form-control" id="user_id" v-model="patient.user_id" required>
+      <div class="row">
+        <!-- First Column -->
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="user_id" class="form-label">User ID</label>
+            <input type="number" class="form-control shadow-sm" id="user_id" v-model="patient.user_id" required>
+          </div>
+          <div class="mb-3">
+            <label for="first_name" class="form-label">First Name</label>
+            <input type="text" class="form-control shadow-sm" id="first_name" v-model="patient.first_name">
+          </div>
+          <div class="mb-3">
+            <label for="second_name" class="form-label">Second Name</label>
+            <input type="text" class="form-control shadow-sm" id="second_name" v-model="patient.second_name">
+          </div>
+          <div class="mb-3">
+            <label for="last_name" class="form-label">Last Name</label>
+            <input type="text" class="form-control shadow-sm" id="last_name" v-model="patient.last_name">
+          </div>
+          <div class="mb-3">
+            <label for="date_of_birth" class="form-label">Date of Birth</label>
+            <input type="date" class="form-control shadow-sm" id="date_of_birth" v-model="patient.date_of_birth">
+          </div>
+        </div>
+        <!-- Second Column -->
+        <div class="col-md-6">
+          <div class="mb-3">
+            <label for="place_of_birth" class="form-label">Place of Birth</label>
+            <input type="text" class="form-control shadow-sm" id="place_of_birth" v-model="patient.place_of_birth">
+          </div>
+          <div class="mb-3">
+            <label for="age" class="form-label">Age</label>
+            <input type="number" class="form-control shadow-sm" id="age" v-model="patient.age">
+          </div>
+          <div class="mb-3">
+            <label for="sex" class="form-label">Sex</label>
+            <input type="text" class="form-control shadow-sm" id="sex" v-model="patient.sex">
+          </div>
+          <div class="mb-3">
+            <label for="address" class="form-label">Address</label>
+            <input type="text" class="form-control shadow-sm" id="address" v-model="patient.address">
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone</label>
+            <input type="text" class="form-control shadow-sm" id="phone" v-model="patient.phone">
+          </div>
+        </div>
+          <div class="text-center">
+          <button type="submit" class="btn btn-primary">Create Patient</button>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="first_name" class="form-label">First Name</label>
-        <input type="text" class="form-control" id="first_name" v-model="patient.first_name">
-      </div>
-      <div class="mb-3">
-        <label for="second_name" class="form-label">Second Name</label>
-        <input type="text" class="form-control" id="second_name" v-model="patient.second_name">
-      </div>
-      <div class="mb-3">
-        <label for="last_name" class="form-label">Last Name</label>
-        <input type="text" class="form-control" id="last_name" v-model="patient.last_name">
-      </div>
-      <div class="mb-3">
-        <label for="date_of_birth" class="form-label">Date of Birth</label>
-        <input type="date" class="form-control" id="date_of_birth" v-model="patient.date_of_birth">
-      </div>
-      <div class="mb-3">
-        <label for="place_of_birth" class="form-label">Place of Birth</label>
-        <input type="text" class="form-control" id="place_of_birth" v-model="patient.place_of_birth">
-      </div>
-      <div class="mb-3">
-        <label for="age" class="form-label">Age</label>
-        <input type="number" class="form-control" id="age" v-model="patient.age">
-      </div>
-      <div class="mb-3">
-        <label for="sex" class="form-label">Sex</label>
-        <input type="text" class="form-control" id="sex" v-model="patient.sex">
-      </div>
-      <div class="mb-3">
-        <label for="address" class="form-label">Address</label>
-        <input type="text" class="form-control" id="address" v-model="patient.address">
-      </div>
-      <div class="mb-3">
-        <label for="phone" class="form-label">Phone</label>
-        <input type="text" class="form-control" id="phone" v-model="patient.phone">
-      </div>
-      <button type="submit" class="btn btn-primary">Create Patient</button>
     </form>
   </div>
 </template>
@@ -147,6 +158,7 @@
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -167,26 +179,47 @@ export default {
   },
   methods: {
     createPatient() {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+      if (!this.patient.user_id || !this.patient.first_name || !this.patient.last_name || !this.patient.date_of_birth || !this.patient.place_of_birth || !this.patient.age || !this.patient.sex || !this.patient.address || !this.patient.phone) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'All fields are required!',
+        });
+        return;
+      }
 
-  axios.post(`${BASE_URL}/patients`, this.patient)
-    .then(response => {
-      console.log('Patient created successfully:', response.data);
-      // Emit an event to indicate that a patient has been created
-      this.$emit('patientCreated');
-      this.$router.push({ name: 'patient-list-admin' });
-    })
-    .catch(error => {
-      console.error('Error creating patient:', error.response ? error.response.data : error.message);
-    });
-}
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
+      axios.post(`${BASE_URL}/patients`, this.patient)
+        .then(response => {
+          console.log('Patient created successfully:', response.data);
+          Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Patient created successfully',
+          });
+          this.$emit('patientCreated');
+          this.$router.push({ name: 'patient-list-admin' });
+        })
+        .catch(error => {
+          console.error('Error creating patient:', error.response ? error.response.data : error.message);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'Something went wrong! Please try again later.',
+          });
+        });
+    }
   }
 };
 </script>
 
 <style scoped>
 .container {
-  max-width: 600px;
+  background-color: #f5f5f5; /* Gray background color */
+}
+
+.form-control {
+  border: 1px solid black; /* Add black border to text fields */
 }
 </style>
