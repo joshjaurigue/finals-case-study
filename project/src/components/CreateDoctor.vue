@@ -94,7 +94,24 @@
       </div>
     </nav>
 
-    <p>This is a page</p>
+    <div class="container">
+      <h1>Create Doctor</h1>
+      <form @submit.prevent="createDoctor">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" v-model="doctor.name" required>
+        </div>
+        <div class="mb-3">
+          <label for="specialization" class="form-label">Specialization</label>
+          <input type="text" class="form-control" id="specialization" v-model="doctor.specialization" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" v-model="doctor.email" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
   </template>
   
   <script>
@@ -103,7 +120,28 @@
     
 
  export default {
+  data() {
+    return {
+      doctor: {
+        name: '',
+        specialization: '',
+        email: ''
+      }
+    };
+  },
   methods: {
+    createDoctor() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+      axios.post(`${BASE_URL}/doctors`, this.doctor)
+        .then(response => {
+          console.log('Doctor created successfully:', response.data);
+          this.$router.push({ name: 'doctor-list-admin' });
+        })
+        .catch(error => {
+          console.error('Error creating doctor:', error);
+        });
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 

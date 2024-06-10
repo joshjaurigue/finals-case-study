@@ -70,6 +70,28 @@
         </div>
       </div>
     </nav>
+
+    <div class="container mt-4">
+      <h1>My Appointments</h1>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Patient Name</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="appointment in appointments" :key="appointment.id">
+            <td>{{ appointment.patient.name }}</td>
+            <td>{{ appointment.date }}</td>
+            <td>{{ appointment.time }}</td>
+            <td>{{ appointment.notes }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </template>
   
   <script>
@@ -78,28 +100,47 @@
     
 
  export default {
+  data() {
+    return {
+      appointments: []
+    };
+  },
   computed: {
     doctorId() {
       return localStorage.getItem('doctor_id');
     }
   },
   methods: {
+    fetchAppointments() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+      axios.get(`${BASE_URL}/appointments?doctor_id=${this.doctorId}`)
+        .then(response => {
+          this.appointments = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching appointments:', error);
+        });
+    },
     logoutUser() {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-
-      // Call the logout API
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
       axios.post(`${BASE_URL}/logout`)
         .then(() => {
-          // Clear localStorage
           localStorage.clear();
-          // Redirect to login page
           this.$router.push('/');
         })
         .catch(error => {
           console.error('Error logging out:', error);
         });
     }
+  },
+  created() {
+    this.fetchAppointments();
   }
 };
-  </script>
-  
+</script>
+
+<style scoped>
+.container {
+  margin-top: 20px;
+}
+</style>

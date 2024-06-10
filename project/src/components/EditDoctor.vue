@@ -70,6 +70,21 @@
       </div>
     </div>
   </nav>
+  <div class="container">
+    <h1>Edit Profile</h1>
+    <form @submit.prevent="updateProfile">
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" v-model="doctor.name" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="email" v-model="doctor.email" required>
+      </div>
+      <!-- Add more fields as necessary -->
+      <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -78,27 +93,63 @@ import axios from '@/axios';
   
 
 export default {
-computed: {
-  doctorId() {
-    return localStorage.getItem('doctor_id');
-  }
-},
-methods: {
-  logoutUser() {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+  data() {
+    return {
+      doctor: {
+        name: '',
+        email: ''
+        // Add more fields as necessary
+      }
+    };
+  },
+  computed: {
+    doctorId() {
+      return localStorage.getItem('doctor_id');
+    }
+  },
+  methods: {
+    fetchProfile() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+      axios.get(`${BASE_URL}/doctors/${this.doctorId}`)
+        .then(response => {
+          this.doctor = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching profile:', error);
+        });
+    },
+    updateProfile() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+      axios.put(`${BASE_URL}/doctors/${this.doctorId}`, this.doctor)
+        .then(() => {
+          alert('Profile updated successfully!');
+        })
+        .catch(error => {
+          console.error('Error updating profile:', error);
+        });
+    },
+    logoutUser() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
-      // Call the logout API
       axios.post(`${BASE_URL}/logout`)
         .then(() => {
-          // Clear localStorage
           localStorage.clear();
-          // Redirect to login page
           this.$router.push('/');
         })
         .catch(error => {
           console.error('Error logging out:', error);
         });
     }
-}
+  },
+  created() {
+    this.fetchProfile();
+  }
 };
 </script>
+
+<style scoped>
+.container {
+  max-width: 600px;
+  margin-top: 20px;
+}
+</style>
