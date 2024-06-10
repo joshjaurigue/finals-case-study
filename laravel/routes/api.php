@@ -12,7 +12,6 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\DoctorMiddleware;
 use App\Http\Middleware\PatientMiddleware;
 
-
 // Authentication routes
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
@@ -20,7 +19,8 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 // Admin routes
 Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-    Route::get('users', [UserController::class, 'index']); 
+    Route::get('users', [UserController::class, 'index']);
+    Route::get('patients', [PatientController::class, 'index']);
     Route::get('dashboard', [UserController::class, 'getCounts']);
     Route::post('users', [UserController::class, 'store']);
     Route::get('users/{id}', [UserController::class, 'show']);
@@ -38,6 +38,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::get('doctors/{id}', [DoctorController::class, 'show']);
     Route::put('doctors/{id}', [DoctorController::class, 'update']);
     Route::delete('doctors/{id}', [DoctorController::class, 'destroy']);
+    Route::post('patients', [PatientController::class, 'store']);
 });
 
 // Doctor routes
@@ -56,7 +57,6 @@ Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () 
     Route::get('records/{id}', [MedicalRecordController::class, 'show']);
     Route::put('records/{id}', [MedicalRecordController::class, 'update']);
     Route::delete('records/{id}', [MedicalRecordController::class, 'destroy']);
-   
 });
 
 // Patient routes
@@ -64,6 +64,7 @@ Route::middleware(['auth:sanctum', PatientMiddleware::class])->group(function ()
     Route::get('patients/{id}', [PatientController::class, 'show']);
     Route::get('appointments', [AppointmentController::class, 'index']);
     Route::post('appointments', [AppointmentController::class, 'store']);
+    Route::post('/patients', [PatientController::class, 'store']);
     Route::get('appointments/{id}', [AppointmentController::class, 'show']);
     Route::put('appointments/{id}', [AppointmentController::class, 'update']);
     Route::delete('appointments/{id}', [AppointmentController::class, 'destroy']);
