@@ -94,7 +94,28 @@
       </div>
     </nav>
 
-    <p>This is a page</p>
+    <div class="container">
+    <h1>Doctor List</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Email</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="doctor in doctors" :key="doctor.id">
+          <td>{{ doctor.name }}</td>
+          <td>{{ doctor.email }}</td>
+          <td>
+            <router-link :to="{ name: 'edit-doctor', params: { id: doctor.id } }" class="btn btn-primary btn-sm">Edit</router-link>
+            <button @click="deleteDoctor(doctor.id)" class="btn btn-danger btn-sm">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   </template>
   
   <script>
@@ -103,22 +124,49 @@
     
 
  export default {
+  data() {
+    return {
+      doctors: []
+    };
+  },
   methods: {
-    logoutUser() {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+    fetchDoctors() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
-      // Call the logout API
+      axios.get(`${BASE_URL}/doctors`)
+        .then(response => {
+          this.doctors = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching doctors:', error);
+        });
+    },
+    deleteDoctor(id) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+      axios.delete(`${BASE_URL}/doctors/${id}`)
+        .then(() => {
+          this.doctors = this.doctors.filter(doctor => doctor.id !== id);
+        })
+        .catch(error => {
+          console.error('Error deleting doctor:', error);
+        });
+    },
+    logoutUser() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
       axios.post(`${BASE_URL}/logout`)
         .then(() => {
-          // Clear localStorage
           localStorage.clear();
-          // Redirect to login page
           this.$router.push('/');
         })
         .catch(error => {
           console.error('Error logging out:', error);
         });
     }
+  },
+  created() {
+    this.fetchDoctors();
   }
 };
   </script>

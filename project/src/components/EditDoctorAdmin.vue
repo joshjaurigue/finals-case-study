@@ -94,7 +94,24 @@
       </div>
     </nav>
 
-    <p>This is a page</p>
+    <div class="container">
+      <h1>Edit Doctor</h1>
+      <form @submit.prevent="updateDoctor">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" v-model="doctor.name" required>
+        </div>
+        <div class="mb-3">
+          <label for="specialization" class="form-label">Specialization</label>
+          <input type="text" class="form-control" id="specialization" v-model="doctor.specialization" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" v-model="doctor.email" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update</button>
+      </form>
+    </div>
   </template>
   
   <script>
@@ -103,7 +120,42 @@
     
 
  export default {
+  data() {
+    return {
+      doctor: {
+        id: '',
+        name: '',
+        specialization: '',
+        email: ''
+      }
+    };
+  },
   methods: {
+    fetchDoctorDetails() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+      const doctorId = this.$route.params.id;
+
+      axios.get(`${BASE_URL}/doctors/${doctorId}`)
+        .then(response => {
+          this.doctor = response.data;
+        })
+        .catch(error => {
+          console.error('Error fetching doctor details:', error);
+        });
+    },
+    updateDoctor() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+      axios.put(`${BASE_URL}/doctors/${this.doctor.id}`, this.doctor)
+        .then(response => {
+          console.log('Doctor updated successfully:', response.data);
+          this.$router.push({ name: 'doctor-list-admin' });
+        })
+        .catch(error => {
+          console.error('Error updating doctor:', error);
+        });
+    },
     logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
@@ -119,6 +171,9 @@
           console.error('Error logging out:', error);
         });
     }
+  },
+  created() {
+    this.fetchDoctorDetails();
   }
 };
   </script>
