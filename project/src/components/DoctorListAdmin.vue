@@ -1,173 +1,210 @@
 <template>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <!-- Navbrand -->
-        <router-link class="navbar-brand" :to="{ name: 'admin-dashboard' }">Hospital Management System</router-link>
-    
-        <!-- Toggler/collapsible Button -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-    
-        <!-- Navbar links -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <!-- Dropdown for User Management -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                User Management
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownUser">
-                <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{ name: 'user-list' }">User List</router-link></li>
-                <li><router-link class="dropdown-item" :to="{ name: 'create-user' }">Create User</router-link></li>
-              </ul>
-            </li>
-    
-            <!-- Dropdown for Appointment Management -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAppointment" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Specialization Management
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownAppointment">
-                <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{name: 'specialization-list'}">Specialization List</router-link></li>
-                <li><router-link class="dropdown-item" :to="{name: 'create-specialization'}">Create Specialization</router-link></li>
-                <!-- Add more items as needed -->
-              </ul>
-            </li>
-    
-            <!-- Dropdown for Patient Management -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPatient" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Patient Management
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownPatient">
-                <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{name: 'patient-list-admin'}">Patient List</router-link></li>
-                <li><router-link class="dropdown-item" :to="{name: 'create-patient'}">Create Patient</router-link></li>
-                <!-- Add more items as needed -->
-              </ul>
-            </li>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <!-- Navbrand -->
+      <router-link class="navbar-brand" :to="{ name: 'admin-dashboard' }">Hospital Management System</router-link>
   
-            <!-- Dropdown for Medical Records -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRecords" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Doctor Management
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownRecords">
-                <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{name: 'doctor-list-admin'}">Doctor List</router-link></li>
-                <li><router-link class="dropdown-item" :to="{name: 'create-doctor'}">Create Doctor</router-link></li>
-                <!-- Add more items as needed -->
-              </ul>
-            </li>
+      <!-- Toggler/collapsible Button -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
   
-            <!-- Dropdown for Doctor Management -->
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDoctor" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Appointment Management
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
-                <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{name: 'appointments-admin'}">View Appointments</router-link></li>
-                <!-- Add more items as needed -->
-              </ul>
-            </li>
+      <!-- Navbar links -->
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <!-- Dropdown for User Management -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownUser" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              User Management
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownUser">
+              <!-- Edit the routes manually -->
+              <li><router-link class="dropdown-item" :to="{ name: 'user-list' }">User List</router-link></li>
+              <li><router-link class="dropdown-item" :to="{ name: 'create-user' }">Create User</router-link></li>
+            </ul>
+          </li>
+  
+          <!-- Dropdown for Appointment Management -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAppointment" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Specialization Management
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownAppointment">
+              <!-- Edit the routes manually -->
+              <li><router-link class="dropdown-item" :to="{name: 'specialization-list'}">Specialization List</router-link></li>
+              <li><router-link class="dropdown-item" :to="{name: 'create-specialization'}">Create Specialization</router-link></li>
+              <!-- Add more items as needed -->
+            </ul>
+          </li>
+  
+          <!-- Dropdown for Patient Management -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPatient" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Patient Management
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownPatient">
+              <!-- Edit the routes manually -->
+              <li><router-link class="dropdown-item" :to="{name: 'patient-list-admin'}">Patient List</router-link></li>
+              <li><router-link class="dropdown-item" :to="{name: 'create-patient'}">Create Patient</router-link></li>
+              <!-- Add more items as needed -->
+            </ul>
+          </li>
 
-             <!-- Dropdown for Doctor Management -->
-             <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDoctor" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                Medical Records
-              </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
-                <!-- Edit the routes manually -->
-                <li><router-link class="dropdown-item" :to="{name: 'view-medicalrecords-admin'}">Medical Records</router-link></li>
-                <!-- Add more items as needed -->
-              </ul>
-            </li>
-          </ul>
-    
-          <!-- Logout Button -->
-          <button class="btn btn-outline-danger" @click="logoutUser">Logout</button>
-        </div>
+          <!-- Dropdown for Medical Records -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRecords" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Doctor Management
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownRecords">
+              <!-- Edit the routes manually -->
+              <li><router-link class="dropdown-item" :to="{name: 'doctor-list-admin'}">Doctor List</router-link></li>
+              <li><router-link class="dropdown-item" :to="{name: 'create-doctor'}">Create Doctor</router-link></li>
+              <!-- Add more items as needed -->
+            </ul>
+          </li>
+
+          <!-- Dropdown for Doctor Management -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDoctor" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Appointment Management
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
+              <!-- Edit the routes manually -->
+              <li><router-link class="dropdown-item" :to="{name: 'appointments-admin'}">View Appointments</router-link></li>
+              <!-- Add more items as needed -->
+            </ul>
+          </li>
+
+           <!-- Dropdown for Doctor Management -->
+           <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDoctor" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Medical Records
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
+              <!-- Edit the routes manually -->
+              <li><router-link class="dropdown-item" :to="{name: 'view-medicalrecords-admin'}">Medical Records</router-link></li>
+              <!-- Add more items as needed -->
+            </ul>
+          </li>
+        </ul>
+  
+        <!-- Logout Button -->
+        <button class="btn btn-outline-danger" @click="logoutUser">Logout</button>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <div class="container">
-    <h1>Doctor List</h1>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="doctor in doctors" :key="doctor.id">
-          <td>{{ doctor.name }}</td>
-          <td>{{ doctor.email }}</td>
-          <td>
-            <router-link :to="{ name: 'edit-doctor', params: { id: doctor.id } }" class="btn btn-primary btn-sm">Edit</router-link>
-            <button @click="deleteDoctor(doctor.id)" class="btn btn-danger btn-sm">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <h4 class="mb-4 text-center">Doctor List</h4>
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Middle Name</th>
+            <th>Last Name</th>
+            <th>Specialization</th>
+            <th>Phone Number</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="doctor in doctors" :key="doctor.id">
+            <td>{{ doctor.user.name }}</td>
+            <td>{{ doctor.user.email }}</td>
+            <td>{{ doctor.first_name }}</td>
+            <td>{{ doctor.middle_name }}</td>
+            <td>{{ doctor.last_name }}</td>
+            <td>{{ doctor.specialization.specialization_title }}</td>
+            <td>{{ doctor.phone_number }}</td>
+            <td>
+              <router-link :to="{ name: 'edit-doctor-admin', params: { id: doctor.id } }" class="btn btn-primary btn-sm">Edit</router-link>
+              <button @click="deleteDoctor(doctor.id)" class="btn btn-danger btn-sm">Delete</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  </template>
-  
-  <script>
-  import { BASE_URL } from '@/config';
-  import axios from '@/axios';
-    
+</template>
 
- export default {
-  data() {
-    return {
-      doctors: []
-    };
-  },
-  methods: {
-    fetchDoctors() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+<script>
+import { BASE_URL } from '@/config';
+import axios from '@/axios';
+import Swal from 'sweetalert2';  
 
-      axios.get(`${BASE_URL}/doctors`)
-        .then(response => {
-          this.doctors = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching doctors:', error);
-        });
-    },
-    deleteDoctor(id) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-
-      axios.delete(`${BASE_URL}/doctors/${id}`)
-        .then(() => {
-          this.doctors = this.doctors.filter(doctor => doctor.id !== id);
-        })
-        .catch(error => {
-          console.error('Error deleting doctor:', error);
-        });
-    },
-    logoutUser() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-
-      axios.post(`${BASE_URL}/logout`)
-        .then(() => {
-          localStorage.clear();
-          this.$router.push('/');
-        })
-        .catch(error => {
-          console.error('Error logging out:', error);
-        });
+export default {
+data() {
+  return {
+    doctors: []
+  };
+},
+mounted() {
+  this.fetchDoctors();
+},
+methods: {
+  async fetchDoctors() {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/doctors`);
+      this.doctors = response.data;
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to Fetch Doctors',
+        text: 'An error occurred while fetching the doctors list. Please try again.',
+        confirmButtonText: 'OK'
+      });
+      console.error('An error occurred:', error);
     }
   },
-  created() {
-    this.fetchDoctors();
+  async deleteDoctor(id) {
+    const result = await Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${BASE_URL}/admin/doctors/${id}`);
+        this.doctors = this.doctors.filter(doctor => doctor.id !== id);
+        Swal.fire({
+          icon: 'success',
+          title: 'Deleted!',
+          text: 'The doctor has been deleted.',
+          confirmButtonText: 'OK'
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Failed to Delete',
+          text: 'An error occurred while deleting the doctor. Please try again.',
+          confirmButtonText: 'OK'
+        });
+        console.error('An error occurred:', error);
+      }
+    }
+  },
+  logoutUser() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+    // Call the logout API
+    axios.post(`${BASE_URL}/logout`)
+      .then(() => {
+        // Clear localStorage
+        localStorage.clear();
+        // Redirect to login page
+        this.$router.push('/');
+      })
+      .catch(error => {
+        console.error('Error logging out:', error);
+      });
   }
+}
 };
-  </script>
-  
+</script>

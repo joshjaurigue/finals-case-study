@@ -93,61 +93,64 @@
       </div>
     </div>
   </nav>
-  <div class="container mt-5 bg-gray">
-    <h2>Edit Patient</h2>
-    <form @submit.prevent="updatePatient">
-      <div class="row">
-        <!-- First Column -->
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label for="user_id" class="form-label">User ID</label>
-            <input type="number" class="form-control shadow-sm" id="user_id" v-model="patient.user_id" required>
-          </div>
-          <div class="mb-3">
-            <label for="first_name" class="form-label">First Name</label>
-            <input type="text" class="form-control shadow-sm" id="first_name" v-model="patient.first_name">
-          </div>
-          <div class="mb-3">
-            <label for="second_name" class="form-label">Second Name</label>
-            <input type="text" class="form-control shadow-sm" id="second_name" v-model="patient.second_name">
-          </div>
-          <div class="mb-3">
-            <label for="last_name" class="form-label">Last Name</label>
-            <input type="text" class="form-control shadow-sm" id="last_name" v-model="patient.last_name">
-          </div>
-          <div class="mb-3">
-            <label for="date_of_birth" class="form-label">Date of Birth</label>
-            <input type="date" class="form-control shadow-sm" id="date_of_birth" v-model="patient.date_of_birth">
-          </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form @submit.prevent="updatePatient" class="shadow p-4">
+        <h4 class="mb-4 text-center">Edit Patient</h4>
+        <!-- Form fields for patient data pre-filled with current data -->
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.name" placeholder="Enter your Name" @input="clearErrors('name')">
+          <div class="text-danger" v-if="errors?.name">{{ errors.name[0] }}</div>
         </div>
-        <!-- Second Column -->
-        <div class="col-md-6">
-          <div class="mb-3">
-            <label for="place_of_birth" class="form-label">Place of Birth</label>
-            <input type="text" class="form-control shadow-sm" id="place_of_birth" v-model="patient.place_of_birth">
-          </div>
-          <div class="mb-3">
-            <label for="age" class="form-label">Age</label>
-            <input type="number" class="form-control shadow-sm" id="age" v-model="patient.age">
-          </div>
-          <div class="mb-3">
-            <label for="sex" class="form-label">Sex</label>
-            <input type="text" class="form-control shadow-sm" id="sex" v-model="patient.sex">
-          </div>
-          <div class="mb-3">
-            <label for="address" class="form-label">Address</label>
-            <input type="text" class="form-control shadow-sm" id="address" v-model="patient.address">
-          </div>
-          <div class="mb-3">
-            <label for="phone" class="form-label">Phone</label>
-            <input type="text" class="form-control shadow-sm" id="phone" v-model="patient.phone">
-          </div>
+        <div class="mb-3">
+          <input type="email" class="form-control" v-model="form.email" placeholder="Enter your Email" @input="clearErrors('email')">
+          <div class="text-danger" v-if="errors?.email">{{ errors.email[0] }}</div>
         </div>
-      </div>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Update Patient</button>
-      </div>
-    </form>
+        <!-- Repeat similar blocks for all other patient fields -->
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.first_name" placeholder="First Name" @input="clearErrors('first_name')">
+          <div class="text-danger" v-if="errors?.first_name">{{ errors.first_name[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.middle_name" placeholder="Middle Name" @input="clearErrors('middle_name')">
+          <div class="text-danger" v-if="errors?.middle_name">{{ errors.middle_name[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.last_name" placeholder="Last Name" @input="clearErrors('last_name')">
+          <div class="text-danger" v-if="errors?.last_name">{{ errors.last_name[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="date" class="form-control" v-model="form.date_of_birth" placeholder="Date of Birth" @input="clearErrors('date_of_birth')">
+          <div class="text-danger" v-if="errors?.date_of_birth">{{ errors.date_of_birth[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.place_of_birth" placeholder="Place of Birth" @input="clearErrors('place_of_birth')">
+          <div class="text-danger" v-if="errors?.place_of_birth">{{ errors.place_of_birth[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="number" class="form-control" v-model="form.age" placeholder="Age" @input="clearErrors('age')">
+          <div class="text-danger" v-if="errors?.age">{{ errors.age[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <select class="form-select" v-model="form.sex" @change="clearErrors('sex')">
+            <option value="" disabled>Select Sex</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+          <div class="text-danger" v-if="errors?.sex">{{ errors.sex[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.address" placeholder="Address" @input="clearErrors('address')">
+          <div class="text-danger" v-if="errors?.address">{{ errors.address[0] }}</div>
+        </div>
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="form.phone" placeholder="Phone" @input="clearErrors('phone')">
+          <div class="text-danger" v-if="errors?.phone">{{ errors.phone[0] }}</div>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Update Patient</button>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -155,62 +158,100 @@
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
 import Swal from 'sweetalert2';
+  
 
 export default {
-  data() {
-    return {
-      patient: {
-        user_id: '',
-        first_name: '',
-        second_name: '',
-        last_name: '',
-        date_of_birth: '',
-        place_of_birth: '',
-        age: '',
-        sex: '',
-        address: '',
-        phone: ''
-      }
-    };
-  },
-  methods: {
-    updatePatient() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-
-      axios.put(`${BASE_URL}/patients/${this.patient.id}`, this.patient)
-        .then(response => {
-          console.log('Patient updated successfully:', response.data);
-          // Show success message with SweetAlert
-          Swal.fire({
-            icon: 'success',
-            title: 'Success',
-            text: 'Patient information updated successfully!',
-          }).then(() => {
-            // Redirect to patient list
-            this.$router.push({ name: 'patient-list-admin' });
-          });
-        })
-        .catch(error => {
-          console.error('Error updating patient:', error.response ? error.response.data : error.message);
-          // Show error message with SweetAlert
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to update patient information. Please try again later.',
-          });
-        });
+data() {
+  return {
+    form: {
+      name: '',
+      email: '',
+      first_name: '',
+      middle_name: '',
+      last_name: '',
+      date_of_birth: '',
+      place_of_birth: '',
+      age: '',
+      sex: 'Male',
+      address: '',
+      phone: ''
+    },
+    errors: {}
+  };
+},
+created() {
+  this.fetchPatient();
+},
+methods: {
+  clearErrors(field) {
+    if (this.errors[field]) {
+      this.errors[field] = null;
     }
   },
+  async fetchPatient() {
+    try {
+      const response = await axios.get(`${BASE_URL}/admin/patients/${this.$route.params.id}`);
+      const patient = response.data;
+      this.form.name = patient.user.name;
+      this.form.email = patient.user.email;
+      this.form.first_name = patient.first_name;
+      this.form.middle_name = patient.middle_name;
+      this.form.last_name = patient.last_name;
+      this.form.date_of_birth = patient.date_of_birth;
+      this.form.place_of_birth = patient.place_of_birth;
+      this.form.age = patient.age;
+      this.form.sex = patient.sex;
+      this.form.address = patient.address;
+      this.form.phone = patient.phone;
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async updatePatient() {
+    try {
+      const response = await axios.put(`${BASE_URL}/admin/patients/edit/${this.$route.params.id}`, this.form);
+      if(response.status === 201) {
+        Swal.fire(
+        'Success',
+        'Patient updated successfully',
+        'success'
+      );
+      }
+      this.$router.push({ name: 'patient-list-admin' });
+    } catch (error) {
+      if (error.response && error.response.data) {
+        this.errors = error.response.data.errors;
+        Swal.fire(
+          'Error',
+          'There was a problem updating the patient',
+          'error'
+        );
+      } else {
+        Swal.fire(
+          'Error',
+          'An unexpected error occurred. Please try again.',
+          'error'
+        ).then(() => {
+          this.$router.push({ name: 'patient-list-admin' });
+        });
+      }
+    }
+  },
+  logoutUser() {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+
+    // Call the logout API
+    axios.post(`${BASE_URL}/logout`)
+      .then(() => {
+        // Clear localStorage
+        localStorage.clear();
+        // Redirect to login page
+        this.$router.push('/');
+      })
+      .catch(error => {
+        console.error('Error logging out:', error);
+      });
+  }
+}
 };
 </script>
-
-
-<style scoped>
-.container {
-  background-color: #f5f5f5; /* Gray background color */
-}
-
-.form-control {
-  border: 1px solid black; /* Add black border to text fields */
-}
-</style>

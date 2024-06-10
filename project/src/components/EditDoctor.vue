@@ -70,86 +70,160 @@
       </div>
     </div>
   </nav>
-  <div class="container">
-    <h1>Edit Profile</h1>
-    <form @submit.prevent="updateProfile">
-      <div class="mb-3">
-        <label for="name" class="form-label">Name</label>
-        <input type="text" class="form-control" id="name" v-model="doctor.name" required>
-      </div>
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" v-model="doctor.email" required>
-      </div>
-      <!-- Add more fields as necessary -->
-      <button type="submit" class="btn btn-primary">Update Profile</button>
-    </form>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form @submit.prevent="updateProfile" class="shadow p-4">
+        <h4 class="mb-4 text-center">Edit Profile</h4>
+
+        <!-- Name -->
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="doctor.user.name" placeholder="Enter Name" @input="clearErrors('user.name')">
+          <div class="text-danger" v-if="errors?.['user.name']">{{ errors['user.name'][0] }}</div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <input type="email" class="form-control" v-model="doctor.user.email" placeholder="Enter Email" @input="clearErrors('user.email')">
+          <div class="text-danger" v-if="errors?.['user.email']">{{ errors['user.email'][0] }}</div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <input type="password" class="form-control" v-model="doctor.password" placeholder="Enter Password" @input="clearErrors('password')">
+          <div class="text-danger" v-if="errors?.password">{{ errors.password[0] }}</div>
+        </div>
+
+        <!-- Password Confirmation -->
+        <div class="mb-3">
+          <input type="password" class="form-control" v-model="doctor.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password_confirmation')">
+        </div>
+
+        <!-- First Name -->
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="doctor.first_name" placeholder="Enter First Name" @input="clearErrors('first_name')">
+          <div class="text-danger" v-if="errors?.first_name">{{ errors.first_name[0] }}</div>
+        </div>
+
+        <!-- Last Name -->
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="doctor.last_name" placeholder="Enter Last Name" @input="clearErrors('last_name')">
+          <div class="text-danger" v-if="errors?.last_name">{{ errors.last_name[0] }}</div>
+        </div>
+
+        <!-- Specialization Combobox -->
+        <div class="mb-3">
+          <select class="form-select" v-model="doctor.specialization_id" @change="clearErrors('specialization_id')">
+            <option value="" disabled>Select Specialization</option>
+            <option v-for="specialization in specializations" :key="specialization.id" :value="specialization.id">
+              {{ specialization.specialization_title }}
+            </option>
+          </select>
+          <div class="text-danger" v-if="errors?.specialization_id">{{ errors.specialization_id[0] }}</div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="mb-3">
+          <input type="text" class="form-control" v-model="doctor.phone_number" placeholder="Enter Phone Number" @input="clearErrors('phone_number')">
+          <div class="text-danger" v-if="errors?.phone_number">{{ errors.phone_number[0] }}</div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
-  
+import Swal from 'sweetalert2';  
 
 export default {
   data() {
     return {
       doctor: {
-        name: '',
-        email: ''
-        // Add more fields as necessary
-      }
+        user: {
+          name: '',
+          email: ''
+        },
+        password: '',
+        password_confirmation: '',
+        first_name: '',
+        last_name: '',
+        specialization_id: '',
+        phone_number: ''
+      },
+      specializations: [],
+      errors: {}
     };
   },
-  computed: {
-    doctorId() {
-      return localStorage.getItem('doctor_id');
-    }
+  mounted() {
+    this.fetchProfile();
+    this.fetchSpecializations();
   },
   methods: {
-    fetchProfile() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-      axios.get(`${BASE_URL}/doctors/${this.doctorId}`)
-        .then(response => {
-          this.doctor = response.data;
-        })
-        .catch(error => {
-          console.error('Error fetching profile:', error);
-        });
+    async fetchProfile() {
+      try {
+        const response = await axios.get(`${BASE_URL}/doctors/my-profile`);
+        this.doctor = response.data;
+      } catch (error) {
+        console.error('Error fetching doctor profile:', error);
+      }
     },
-    updateProfile() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-      axios.put(`${BASE_URL}/doctors/${this.doctorId}`, this.doctor)
-        .then(() => {
-          alert('Profile updated successfully!');
-        })
-        .catch(error => {
-          console.error('Error updating profile:', error);
-        });
+    async fetchSpecializations() {
+      try {
+        const response = await axios.get(`${BASE_URL}/specializations`);
+        this.specializations = response.data;
+      } catch (error) {
+        console.error('Failed to fetch specializations:', error);
+      }
     },
-    logoutUser() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+    clearErrors(field) {
+      if (this.errors[field]) {
+        this.errors[field] = null;
+      }
+    },
+    async updateProfile() {
+      try {
+        const response = await axios.put(`${BASE_URL}/doctors/update-profile`, this.doctor);
+        if (response.status === 201) {
+          Swal.fire(
+            'Success',
+            'Profile updated successfully',
+            'success'
+          ).then(() => {
+              this.$router.push({ name: 'view-doctor-profile-details' });
+            });
+        }
+      } catch (error) {
+        if (error.response && error.response.data) {
+          this.errors = error.response.data.errors;
+          Swal.fire(
+            'Error',
+            'Please check your input and try again.',
+            'error'
+          )
+        } else {
+          console.error('An unexpected error occurred:', error);
+        }
+      }
+    },
+  logoutUser() {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
+      // Call the logout API
       axios.post(`${BASE_URL}/logout`)
         .then(() => {
+          // Clear localStorage
           localStorage.clear();
+          // Redirect to login page
           this.$router.push('/');
         })
         .catch(error => {
           console.error('Error logging out:', error);
         });
     }
-  },
-  created() {
-    this.fetchProfile();
-  }
+}
 };
 </script>
-
-<style scoped>
-.container {
-  max-width: 600px;
-  margin-top: 20px;
-}
-</style>

@@ -55,112 +55,76 @@
       </div>
     </div>
   </nav>
-  <div class="container mt-5">
-    <div class="card shadow-lg">
-      <div class="card-header bg-primary text-white text-center">
-        <h2>My Profile</h2>
-      </div>
-      <div class="card-body">
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>First Name:</strong>
-              <p>{{ patient.firstName }}</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Second Name:</strong>
-              <p>{{ patient.secondName }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Last Name:</strong>
-              <p>{{ patient.lastName }}</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Date of Birth:</strong>
-              <p>{{ patient.dateOfBirth }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Place of Birth:</strong>
-              <p>{{ patient.placeOfBirth }}</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Age:</strong>
-              <p>{{ patient.age }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Sex:</strong>
-              <p>{{ patient.sex }}</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Address:</strong>
-              <p>{{ patient.address }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <div class="info-group">
-              <strong>Phone:</strong>
-              <p>{{ patient.phone }}</p>
-            </div>
-          </div>
-        </div>
+
+  <div class="container">
+      <h1>My Patient Profile Details</h1>
+      <div v-if="loading" class="mt-3">Loading...</div>
+      <div v-else-if="error" class="mt-3">{{ error }}</div>
+      <div v-else class="mt-3">
+        <p><strong>Name:</strong> {{ patient.user.name }}</p>
+        <p><strong>Email:</strong> {{ patient.user.email }}</p>
+        <p><strong>First Name:</strong> {{ patient.first_name }}</p>
+        <p><strong>Middle Name:</strong> {{ patient.middle_name }}</p>
+        <p><strong>Last Name:</strong> {{ patient.last_name }}</p>
+        <p><strong>Date of Birth:</strong> {{ patient.date_of_birth }}</p>
+        <p><strong>Place of Birth:</strong> {{ patient.place_of_birth }}</p>
+        <p><strong>Age:</strong> {{ patient.age }}</p>
+        <p><strong>Sex:</strong> {{ patient.sex }}</p>
+        <p><strong>Address:</strong> {{ patient.address }}</p>
+        <p><strong>Phone:</strong> {{ patient.phone }}</p>
+        <p><strong>Diagnosis:</strong> {{ diagnosis }}</p>
       </div>
     </div>
-  </div>
 </template>
 
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
+import Swal from 'sweetalert2';  
 
 export default {
   data() {
     return {
-      patient: {}
+      patient: {},
+      loading: true,
+      error: null
     };
   },
-  computed: {
-    patientId() {
-      return localStorage.getItem('patient_id');
+  mounted() {
+    this.fetchProfile();
+  },
+computed: {
+  patientId() {
+    return localStorage.getItem('patient_id');
+  }, 
+  diagnosis() {
+      return this.patient.diagnosis !== null ? this.patient.diagnosis : 'None';
     }
-  },
-  created() {
-    this.fetchPatientProfile();
-  },
-  methods: {
-    fetchPatientProfile() {
+},
+methods: {
+  fetchProfile() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       axios.get(`${BASE_URL}/patients/${this.patientId}`)
         .then(response => {
           this.patient = response.data;
+          this.loading = false;
         })
         .catch(error => {
-          console.error('Error fetching patient profile:', error);
+          this.loading = false;
+          if (error.response && error.response.status === 404) {
+            this.error = 'Patient not found';
+          } else {
+            this.error = 'An error occurred while fetching data';
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'An error occurred while fetching data!',
+            });
+          }
         });
     },
-    logoutUser() {
+  logoutUser() {
         axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
       // Call the logout API
@@ -178,36 +142,3 @@ export default {
 }
 };
 </script>
-
-<style scoped>
-.container {
-  max-width: 800px;
-}
-
-.card {
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.card-header {
-  padding: 20px;
-}
-
-.card-body {
-  padding: 30px;
-}
-
-.info-group {
-  background-color: #f8f9fa;
-  border-radius: 5px;
-  padding: 15px;
-  margin-bottom: 15px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-.info-group p {
-  margin: 0;
-}
-</style>
-
-
