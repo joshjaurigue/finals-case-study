@@ -111,6 +111,7 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -141,14 +142,34 @@ export default {
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
     async deleteRecord(id) {
-      if (confirm('Are you sure you want to delete this record?')) {
-        try {
-          await axios.delete(`/api/admin/medicalrecords/${id}`);
-          this.fetchRecords();
-        } catch (error) {
-          console.error('There was an error deleting the medical record:', error);
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this record!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.delete(`/api/admin/medicalrecords/${id}`);
+            this.fetchRecords();
+            Swal.fire(
+              'Deleted!',
+              'Your record has been deleted.',
+              'success'
+            );
+          } catch (error) {
+            console.error('There was an error deleting the medical record:', error);
+            Swal.fire(
+              'Error!',
+              'An error occurred while deleting the record.',
+              'error'
+            );
+          }
         }
-      }
+      });
     },
     logoutUser() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;

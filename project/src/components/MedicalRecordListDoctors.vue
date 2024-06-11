@@ -97,6 +97,7 @@
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -143,20 +144,41 @@ export default {
           console.error('Error logging out:', error);
         });
     },
-     deleteRecord(recordId) {
-      axios.delete(`http://127.0.0.1:8000/api/deleteRecord/${recordId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+    deleteRecord(recordId) {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'You will not be able to recover this record!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(result => {
+        if (result.isConfirmed) {
+          axios.delete(`http://127.0.0.1:8000/api/deleteRecord/${recordId}`, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+            }
+          })
+          .then(() => {
+            // Remove the deleted record from the records array
+            this.records = this.records.filter(record => record.id !== recordId);
+            console.log('Record deleted successfully');
+            Swal.fire(
+              'Deleted!',
+              'Your record has been deleted.',
+              'success'
+            );
+          })
+          .catch(error => {
+            console.error('Error deleting record:', error);
+            Swal.fire(
+              'Error!',
+              'An error occurred while deleting the record.',
+              'error'
+            );
+          });
         }
-      })
-      .then(() => {
-        // Remove the deleted record from the records array
-        this.records = this.records.filter(record => record.id !== recordId);
-        console.log('Record deleted successfully');
-        window.location.reload();
-      })
-      .catch(error => {
-        console.error('Error deleting record:', error);
       });
     }
   },
@@ -174,4 +196,5 @@ export default {
   margin: 10px 0;
 }
 </style>
+
 

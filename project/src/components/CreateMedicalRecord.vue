@@ -43,6 +43,7 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -83,12 +84,24 @@ export default {
           Authorization: `Bearer ${localStorage.getItem('auth_token')}`
         }
       })
-      .then(response => {
-        console.log(response.data);
-        this.$router.push('/doctor/records');
+      .then(() => {
+        Swal.fire({
+          title: 'Success',
+          text: 'Medical record added successfully',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.$router.push('/doctor/records');
+        });
       })
       .catch(error => {
         console.error('Error adding medical record:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Failed to add medical record',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       });
     }
   },
@@ -97,7 +110,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 .card {

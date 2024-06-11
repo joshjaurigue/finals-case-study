@@ -59,6 +59,7 @@
 
 <script>
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 export default {
   name: "EditMedicalRecord",
@@ -86,21 +87,32 @@ export default {
       axios.put(`http://127.0.0.1:8000/api/updateRecord/${this.recordId}`, {
         type: this.record.type,
         record_date: this.record.recordDate,
-        record: this.record.details // Remove patient_name from the request payload
+        record: this.record.details
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
-      .then(response => {
-        console.log(response.data);
-        this.$router.push(`/doctor/records`);
+      .then(() => {
+        Swal.fire({
+          title: 'Success',
+          text: 'Medical record updated successfully',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.$router.push(`/doctor/records`);
+        });
       })
       .catch(error => {
         console.error(error);
+        Swal.fire({
+          title: 'Error',
+          text: 'Failed to update medical record',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       });
     },
-
 
     fetchRecord() {
       axios.get(`http://127.0.0.1:8000/api/getRecordById/${this.recordId}`, {
@@ -109,7 +121,7 @@ export default {
         },
       })
       .then(response => {
-        const record = response.data[0]; // Since the response is an array, access the first item
+        const record = response.data[0];
         this.record.type = record.type;
         this.record.recordDate = record.record_date;
         this.record.patientName = record.name;
@@ -127,3 +139,14 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* Add your custom styles here */
+.bg-blue-500 {
+  background-color: #3b82f6;
+}
+
+.hover\:bg-blue-600:hover {
+  background-color: #2563eb;
+}
+</style>
