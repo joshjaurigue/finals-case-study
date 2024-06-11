@@ -177,4 +177,11 @@ class UserController extends Controller
             'totalPatients' => $totalPatients,
         ]);
     }
+
+     // Fetch all specializations
+     public function getSpecializations()
+     {
+         $specializations = Specialization::all();
+         return response()->json($specializations);
+     }
 }
