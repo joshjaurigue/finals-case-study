@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Patient;
 use App\Models\Doctor;
+use App\Models\MedicalRecord;
+
 use Illuminate\Support\Facades\DB;
 
 class MedicalRecordController extends Controller
@@ -34,7 +36,7 @@ class MedicalRecordController extends Controller
                 'medical_records.record',
                 'medical_records.record_date',
                 'patient_users.name as patient_name', 
-                'doctor_users.name as doctor_name', 
+                DB::raw("CONCAT(doctors.first_name, IF(doctors.middle_name IS NOT NULL AND doctors.middle_name != '', CONCAT(' ', doctors.middle_name), ''), IF(doctors.last_name IS NOT NULL AND doctors.last_name != '', CONCAT(' ', doctors.last_name), '')) as doctor_name")
             )
             ->get();
     
@@ -143,16 +145,24 @@ class MedicalRecordController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('create', MedicalRecord::class);
-        $validated = $request->validate([
-            'patient_id' => 'required|exists:users,id',
-            'doctor_id' => 'nullable|exists:users,id',
+        $validatedData = $request->validate([
+            'patient_id' => 'required|exists:patients,id',
+            'doctor_id' => 'required|exists:doctors,id',
+            'type' => 'required|in:diagnosis,prescription,treatment',
             'record' => 'required|string',
+            'record_date' => 'required|date'
         ]);
 
-        return MedicalRecord::create($validated);
-    }
+        $record = new MedicalRecord();
+        $record->patient_id = $validatedData['patient_id'];
+        $record->doctor_id = $validatedData['doctor_id'];
+        $record->type = $validatedData['type'];
+        $record->record = $validatedData['record'];
+        $record->record_date = $validatedData['record_date'];
+        $record->save();
 
+        return response()->json($record, 201);
+    }
     public function update(Request $request, $id)
     {
         $record = MedicalRecord::findOrFail($id);
@@ -166,11 +176,21 @@ class MedicalRecordController extends Controller
         return $record;
     }
 
+    public function getPatientsForDoctor()
+    {
+        $patients = DB::table('patients')
+            ->join('users', 'patients.user_id', '=', 'users.id')
+            ->select('patients.id as patient_id', 'users.name as patient_name')
+            ->get();
+
+        return response()->json($patients);
+    }
+
     public function destroy($id)
     {
         $record = MedicalRecord::findOrFail($id);
-        $this->authorize('delete', $record);
         $record->delete();
         return response()->noContent();
     }
+    
 }

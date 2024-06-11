@@ -1,104 +1,118 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
-      <!-- Navbrand -->
-      <router-link class="navbar-brand" :to="{ name: 'doctor-dashboard' }">Hospital Management System</router-link>
-  
-      <!-- Toggler/collapsible Button -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-  
-      <!-- Navbar links -->
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <!-- Dropdown for Patient Management -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownPatient" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Patient Management
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownPatient">
-              <!-- Edit the routes manually -->
-              <li><router-link class="dropdown-item" :to="{name: 'view-my-patients'}">My Patients</router-link></li>
-              <!-- Add more items as needed -->
-            </ul>
-          </li>
-  
-          <!-- Dropdown for Doctor Management -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownDoctor" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-             Doctor Management
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownDoctor">
-              <!-- Edit the routes manually -->
-              <li><router-link class="dropdown-item" :to="{name: 'view-doctor-profile-details',  params: { id: doctorId }}">My Profile</router-link></li>
-              <li><router-link class="dropdown-item" :to="{name: 'appointment-list-doctors'}">My Appointments</router-link></li>
-              <!-- Add more items as needed -->
-            </ul>
-          </li>
+  <div class="container mt-5">
+    <router-link :to="{ path: '/doctor/records' }" class="btn btn-secondary mb-3">Back</router-link>
 
-          <!-- Dropdown for Appointment Management -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownAppointment" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-             Appointment Management
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownAppointment">
-              <!-- Edit the routes manually -->
-              <li><router-link class="dropdown-item" :to="{name: 'appointment-list-doctors'}">My Appointments</router-link></li>
-              <!-- Add more items as needed -->
-            </ul>
-          </li>
-
-          <!-- Dropdown for Medical Records-->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownRecords" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Medical Records
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="navbarDropdownRecords">
-              <!-- Edit the routes manually -->
-              <li><router-link class="dropdown-item" :to="{name: 'medical-record-list-doctors'}">Medical Records</router-link></li>
-              <li><router-link class="dropdown-item" :to="{name: 'create-medical-record'}">Create Medical Records</router-link></li>
-              <!-- Add more items as needed -->
-            </ul>
-          </li>
-
-    
-        </ul>
-  
-        <!-- Logout Button -->
-        <button class="btn btn-outline-danger" @click="logoutUser">Logout</button>
+    <h2 class="text-center mb-4">Add New Medical Record</h2>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <form @submit.prevent="addRecord">
+              <div class="form-group mb-3">
+                <label for="type">Record Type</label>
+                <select id="type" v-model="record.type" class="form-control">
+                  <option value="diagnosis">Diagnosis</option>
+                  <option value="prescription">Prescription</option>
+                  <option value="treatment">Treatment</option>
+                </select>
+              </div>
+              <div class="form-group mb-3">
+                <label for="recordDate">Record Date</label>
+                <input type="datetime-local" id="recordDate" v-model="record.recordDate" class="form-control"/>
+              </div>
+              <div class="form-group mb-3">
+                <label for="patientId">Patient Name</label>
+                <select id="patientId" v-model="record.patient_id" class="form-control">
+                  <option v-for="patient in patients" :key="patient.patient_id" :value="patient.patient_id">
+                    {{ patient.patient_name }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group mb-3">
+                <label for="details">Details</label>
+                <input type="text" id="details" v-model="record.details" class="form-control"/>
+              </div>
+              <button type="submit" class="btn btn-success">Add Record</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
-  </nav>
+  </div>
 </template>
 
 <script>
-import { BASE_URL } from '@/config';
-import axios from '@/axios';
-  
+import axios from 'axios';
 
 export default {
-computed: {
-  doctorId() {
-    return localStorage.getItem('doctor_id');
-  }
-},
-methods: {
-  logoutUser() {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-
-      // Call the logout API
-      axios.post(`${BASE_URL}/logout`)
-        .then(() => {
-          // Clear localStorage
-          localStorage.clear();
-          // Redirect to login page
-          this.$router.push('/');
-        })
-        .catch(error => {
-          console.error('Error logging out:', error);
-        });
+  data() {
+    return {
+      record: {
+        type: '',
+        recordDate: '',
+        patient_id: '', 
+        details: ''
+      },
+      patients: [] 
+    };
+  },
+  methods: {
+    fetchPatients() {
+      axios.get(`http://127.0.0.1:8000/api/getPatientsForDoctor`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      })
+      .then(response => {
+        this.patients = response.data;
+      })
+      .catch(error => {
+        console.error('Error fetching patients:', error);
+      });
+    },
+    addRecord() {
+      const doctorId = localStorage.getItem('doctor_id');
+      axios.post(`http://127.0.0.1:8000/api/addRecord`, {
+        type: this.record.type,
+        record_date: this.record.recordDate,
+        patient_id: this.record.patient_id,
+        doctor_id: doctorId, 
+        record: this.record.details
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`
+        }
+      })
+      .then(response => {
+        console.log(response.data);
+        this.$router.push('/doctor/records');
+      })
+      .catch(error => {
+        console.error('Error adding medical record:', error);
+      });
     }
-}
+  },
+  mounted() {
+    this.fetchPatients(); 
+  }
 };
 </script>
+
+
+<style scoped>
+.card {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+</style>

@@ -61,12 +61,13 @@ Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () 
     Route::patch('/appointments/status/{id}', [AppointmentController::class, 'updateStatus']);
     Route::delete('/doctor/appointments/{id}', [AppointmentController::class, 'destroy']);
     Route::get('records', [MedicalRecordController::class, 'index']);
-    Route::post('records', [MedicalRecordController::class, 'store']);
+    Route::post('/addRecord', [MedicalRecordController::class, 'store']);
     Route::get('/getDoctorRecords/{id}', [MedicalRecordController::class, 'getDoctorRecords']);
     Route::get('/getRecordById/{id}', [MedicalRecordController::class, 'getRecordById']);
+    Route::get('/getPatientsForDoctor', [MedicalRecordController::class, 'getPatientsForDoctor']);
 
     Route::put('updateRecord/{id}', [MedicalRecordController::class, 'updateRecord']);
-    Route::delete('records/{id}', [MedicalRecordController::class, 'destroy']);
+    Route::delete('deleteRecord/{id}', [MedicalRecordController::class, 'destroy']);
    
 });
 

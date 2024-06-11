@@ -55,24 +55,21 @@
               Medical Records
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownRecords">
-              <!-- Edit the routes manually -->
               <li><router-link class="dropdown-item" :to="{name: 'medical-record-list-doctors'}">Medical Records</router-link></li>
-              <li><router-link class="dropdown-item" :to="{name: 'create-medical-record'}">Create Medical Records</router-link></li>
-              <!-- Add more items as needed -->
             </ul>
           </li>
 
     
         </ul>
   
-        <!-- Logout Button -->
         <button class="btn btn-outline-danger" @click="logoutUser">Logout</button>
       </div>
     </div>
   </nav>
-<!-- Medical Records Section -->
 <div class="container mt-5">
-      <h2 class="text-center mb-4">My Medical Records</h2>
+      <h2 class="text-center mb-4">My Medical Records  <router-link :to="{ name: 'create-medical-record' }" class="btn btn-success">+</router-link>
+      </h2>
+
       <div v-if="records.length" class="row row-cols-1 row-cols-md-2 g-4">
         <div v-for="record in records" :key="record.id" class="col">
           <div class="card h-100">
@@ -84,6 +81,7 @@
 
 
               <router-link :to="{ name: 'edit-medical-record', params: { id: record.id } }" class="btn btn-primary">Edit</router-link>
+              <button @click="deleteRecord(record.id)" class="btn btn-danger">Delete</button>
 
             </div>
           </div>
@@ -144,6 +142,22 @@ export default {
         .catch(error => {
           console.error('Error logging out:', error);
         });
+    },
+     deleteRecord(recordId) {
+      axios.delete(`http://127.0.0.1:8000/api/deleteRecord/${recordId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+        }
+      })
+      .then(() => {
+        // Remove the deleted record from the records array
+        this.records = this.records.filter(record => record.id !== recordId);
+        console.log('Record deleted successfully');
+        window.location.reload();
+      })
+      .catch(error => {
+        console.error('Error deleting record:', error);
+      });
     }
   },
   mounted() {
