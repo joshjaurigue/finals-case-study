@@ -190,7 +190,7 @@ methods: {
   },
   async fetchSpecializations() {
     try {
-      const response = await axios.get(`${BASE_URL}/specializations`);
+      const response = await axios.get(`${BASE_URL}/admin/specializations`);
       this.specializations = response.data;
     } catch (error) {
       console.error('Failed to fetch specializations:', error);
