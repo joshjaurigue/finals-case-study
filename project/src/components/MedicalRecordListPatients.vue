@@ -60,16 +60,26 @@
     <!-- Medical Records Section -->
     <div class="container mt-5">
       <h2 class="text-center mb-4">My Medical Records</h2>
-      <div v-if="records.length" class="row row-cols-1 row-cols-md-2 g-4">
-        <div v-for="record in records" :key="record.id" class="col">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">Record Type: {{ record.type }}</h5>
-              <p class="card-text"><strong>Date:</strong> {{ formatDate(record.record_date) }}</p>
-              <p class="card-text"><strong>Doctor:</strong> {{ record.doctor_full_name }}</p>
-              <p class="card-text"><strong>Details:</strong> {{ record.record }}</p>
-            </div>
-          </div>
+      <div v-if="records.length">
+        <div class="table-responsive">
+          <table class="table w-100">
+            <thead>
+              <tr>
+                <th @click="sortBy('type')">Record Type</th>
+                <th @click="sortBy('doctor_full_name')">Doctor</th>
+                <th>Details</th>
+                <th @click="sortBy('record_date')">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="record in sortedRecords" :key="record.id">
+                <td>{{ record.type }}</td>
+                <td>{{ record.doctor_full_name }}</td>
+                <td>{{ record.record }}</td>
+                <td>{{ formatDate(record.record_date) }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <div v-else class="text-center">
@@ -86,12 +96,23 @@ import axios from '@/axios';
 export default {
   data() {
     return {
-      records: []
+      records: [],
+      sortKey: 'doctor_full_name',
+      sortOrder: 'asc'
     };
   },
   computed: {
     patientId() {
       return localStorage.getItem('patient_id');
+    },
+    sortedRecords() {
+      return this.records.slice().sort((a, b) => {
+        let modifier = 1;
+        if (this.sortOrder === 'desc') modifier = -1;
+        if (a[this.sortKey] < b[this.sortKey]) return -1 * modifier;
+        if (a[this.sortKey] > b[this.sortKey]) return 1 * modifier;
+        return 0;
+      });
     }
   },
   methods: {
@@ -99,7 +120,7 @@ export default {
       axios.get(`http://127.0.0.1:8000/api/getPatientRecords/${this.patientId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
-          'Custom-Header': 'CustomHeaderValue'  
+          'Custom-Header': 'CustomHeaderValue'
         }
       })
       .then(response => {
@@ -112,6 +133,14 @@ export default {
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       return new Date(dateString).toLocaleDateString(undefined, options);
+    },
+    sortBy(key) {
+      if (this.sortKey === key) {
+        this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortKey = key;
+        this.sortOrder = 'asc';
+      }
     },
     logoutUser() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
@@ -135,11 +164,13 @@ export default {
 };
 </script>
 
-<style>
-.container {
-  max-width: 800px;
+<style scoped>
+.table-responsive {
+  max-height: 500px;
+  overflow-y: auto;
 }
-.card {
-  margin: 10px 0;
+
+.table th {
+  cursor: pointer;
 }
 </style>

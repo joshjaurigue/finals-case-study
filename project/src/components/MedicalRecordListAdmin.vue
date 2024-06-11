@@ -84,34 +84,39 @@
         </div>
       </div>
     </nav>
-<!-- Medical Records Section -->
-<div class="container mt-5">
+    <div class="container mt-5">
       <h2 class="text-center mb-4">All Medical Records</h2>
-      <div v-if="records.length" class="row row-cols-1 row-cols-md-2 g-4">
-        <div v-for="record in records" :key="record.id" class="col">
-          <div class="card h-100">
-            <div class="card-body">
-              <h5 class="card-title">Record Type: {{ record.type }}</h5>
-              <p class="card-text"><strong>Details:</strong> {{ record.record }}</p>
-              <p class="card-text"><strong>Patient Name:</strong> {{ record.patient_name }}</p>
-              <p class="card-text"><strong>Doctor Name:</strong> {{ record.doctor_name }}</p>
-              <p class="card-text"><strong>Date:</strong> {{ formatDate(record.record_date) }}</p>
-
-            </div>
-          </div>
-        </div>
+      <div v-if="records.length">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Record Type</th>
+              <th>Patient Name</th>
+              <th>Doctor Name</th>
+              <th>Details</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="record in sortedRecords" :key="record.id">
+              <td>{{ record.type }}</td>
+              <td>{{ record.patient_name }}</td>
+              <td>{{ record.doctor_name }}</td>
+              <td>{{ record.record }}</td>
+              <td>{{ formatDate(record.record_date) }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       <div v-else class="text-center">
         <p>No medical records found.</p>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
 import axios from 'axios';
-import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -141,36 +146,6 @@ export default {
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
-    async deleteRecord(id) {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this record!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            await axios.delete(`/api/admin/medicalrecords/${id}`);
-            this.fetchRecords();
-            Swal.fire(
-              'Deleted!',
-              'Your record has been deleted.',
-              'success'
-            );
-          } catch (error) {
-            console.error('There was an error deleting the medical record:', error);
-            Swal.fire(
-              'Error!',
-              'An error occurred while deleting the record.',
-              'error'
-            );
-          }
-        }
-      });
-    },
     logoutUser() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
       axios.post(`${process.env.VUE_APP_BASE_URL}/logout`)
@@ -181,6 +156,12 @@ export default {
         .catch(error => {
           console.error('Error logging out:', error);
         });
+    }
+  },
+  computed: {
+    sortedRecords() {
+      // Sort records based on doctor's name
+      return this.records.slice().sort((a, b) => a.doctor_name.localeCompare(b.doctor_name));
     }
   }
 };
@@ -202,25 +183,4 @@ th, td {
   border: 1px solid #ddd;
 }
 
-button {
-  padding: 5px 10px;
-}
-
-.btn-info {
-  background-color: #17a2b8;
-  border: none;
-}
-
-.btn-info:hover {
-  background-color: #138496;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border: none;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-}
 </style>
