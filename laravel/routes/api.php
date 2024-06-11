@@ -31,7 +31,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::delete('users/{id}', [UserController::class, 'destroy']);
     Route::get('admin/specializations', [UserController::class, 'getSpecializations']);
     Route::post('specializations', [SpecializationController::class, 'store']);
-    Route::get('specializations/{id}', [SpecializationController::class, 'show']);
+    Route::get('admin/specializations/{id}', [SpecializationController::class, 'show']);
     Route::put('specializations/{id}', [SpecializationController::class, 'update']);
     Route::delete('specializations/{id}', [SpecializationController::class, 'destroy']);
     Route::get('admin/patients', [PatientController::class, 'index']);
