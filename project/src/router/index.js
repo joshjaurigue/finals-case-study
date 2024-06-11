@@ -36,6 +36,7 @@ import CreateSpecialization from '../components/CreateSpecialization.vue'
 import EditSpecialization from '../components/EditSpecialization.vue'
 import ViewSpecializationDetails from '../components/ViewSpecializationDetails.vue'
 import ErrorPage from '../components/ErrorPage.vue'
+import MedicalRecordList from '@/components/MedicalRecordList.vue';
 
 import ViewMedicalRecordDetailsAdmin from '@/components/ViewMedicalRecordDetailsAdmin.vue'
 import AppointmentListAdmin from '@/components/AppointmentListAdmin.vue'
@@ -52,6 +53,11 @@ const routes = [
     path: '/', 
     name: 'login', 
     component: Login 
+  },
+  {
+    path: '/medical-records',
+    name: 'medical-record-list-patients',
+    component: MedicalRecordList
   },
   { 
     path: '/register', 
@@ -244,7 +250,7 @@ const routes = [
     meta: { requiresAuth: true, role: 'doctor' } 
   },
   { 
-    path: '/doctor/records/:id/edit', 
+    path: '/doctor/records/:id', 
     name: 'edit-medical-record', 
     component: EditMedicalRecord, 
     meta: { requiresAuth: true, role: 'doctor' } 

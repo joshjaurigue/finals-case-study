@@ -84,39 +84,29 @@
         </div>
       </div>
     </nav>
+<!-- Medical Records Section -->
+<div class="container mt-5">
+      <h2 class="text-center mb-4">All Medical Records</h2>
+      <div v-if="records.length" class="row row-cols-1 row-cols-md-2 g-4">
+        <div v-for="record in records" :key="record.id" class="col">
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">Record Type: {{ record.type }}</h5>
+              <p class="card-text"><strong>Details:</strong> {{ record.record }}</p>
+              <p class="card-text"><strong>Patient Name:</strong> {{ record.patient_name }}</p>
+              <p class="card-text"><strong>Doctor Name:</strong> {{ record.doctor_name }}</p>
+              <p class="card-text"><strong>Date:</strong> {{ formatDate(record.record_date) }}</p>
 
-    <!-- Medical Records List -->
-    <div>
-      <h1>Medical Records List</h1>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Patient ID</th>
-            <th>Patient Name</th>
-            <th>Date of Birth</th>
-            <th>Diagnosis</th>
-            <th>Treatment</th>
-            <th>Billing Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="record in records" :key="record.id">
-            <td>{{ record.patient_id }}</td>
-            <td>{{ record.patient_name }}</td>
-            <td>{{ new Date(record.dob).toLocaleDateString() }}</td>
-            <td>{{ record.diagnosis }}</td>
-            <td>{{ record.treatment }}</td>
-            <td>{{ record.billing_status }}</td>
-            <td>
-              <button class="btn btn-info btn-sm" @click="viewDetails(record.id)">View</button>
-              <button class="btn btn-danger btn-sm" @click="deleteRecord(record.id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div v-else class="text-center">
+        <p>No medical records found.</p>
+      </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -129,19 +119,26 @@ export default {
     };
   },
   mounted() {
-    this.fetchRecords();
+    this.fetchMedicalRecords();
   },
   methods: {
-    async fetchRecords() {
-      try {
-        const response = await axios.get('/api/admin/medicalrecords');
+    fetchMedicalRecords() {
+      axios.get(`http://127.0.0.1:8000/api/getAdminRecords/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+          'Custom-Header': 'CustomHeaderValue'  
+        }
+      })
+      .then(response => {
         this.records = response.data;
-      } catch (error) {
-        console.error('There was an error fetching the medical records:', error);
-      }
+      })
+      .catch(error => {
+        console.error('Error fetching medical records:', error);
+      });
     },
-    viewDetails(id) {
-      this.$router.push({ name: 'view-medicalrecord-details', params: { id } });
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
     },
     async deleteRecord(id) {
       if (confirm('Are you sure you want to delete this record?')) {
