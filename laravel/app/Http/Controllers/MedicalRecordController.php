@@ -36,7 +36,7 @@ class MedicalRecordController extends Controller
                 'medical_records.record',
                 'medical_records.record_date',
                 'patient_users.name as patient_name', 
-                DB::raw("CONCAT(doctors.first_name, IF(doctors.middle_name IS NOT NULL AND doctors.middle_name != '', CONCAT(' ', doctors.middle_name), ''), IF(doctors.last_name IS NOT NULL AND doctors.last_name != '', CONCAT(' ', doctors.last_name), '')) as doctor_name")
+                'doctor_users.name as doctor_name', 
             )
             ->get();
     
@@ -49,12 +49,13 @@ class MedicalRecordController extends Controller
             $records = DB::table('medical_records')
                 ->where('medical_records.patient_id', $patientId)
                 ->join('doctors', 'medical_records.doctor_id', '=', 'doctors.id')
+                ->join('users as doctor_users', 'doctors.user_id', '=', 'doctor_users.id')
                 ->select(
                     'medical_records.id',
                 'medical_records.type',
                 'medical_records.record',
                 'medical_records.record_date',
-                DB::raw("CONCAT(doctors.first_name, IF(doctors.middle_name IS NOT NULL AND doctors.middle_name != '', CONCAT(' ', doctors.middle_name), ''), IF(doctors.last_name IS NOT NULL AND doctors.last_name != '', CONCAT(' ', doctors.last_name), '')) as doctor_full_name")
+                'doctor_users.name as doctor_full_name', 
                 )
             ->get();
     
