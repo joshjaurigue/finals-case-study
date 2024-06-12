@@ -61,15 +61,16 @@
                 <!-- Add more items as needed -->
               </ul>
             </li>
-
-      
           </ul>
-    
           <!-- Logout Button -->
           <button class="btn btn-outline-danger" @click="logoutUser">Logout</button>
         </div>
       </div>
     </nav>
+    <br>
+     <div class="container">
+      <h2>Welcome Doctor! Here you can manage your appointments, view medical records, and more.</h2>
+     </div>
   </template>
   
   <script>
@@ -81,7 +82,11 @@
   computed: {
     doctorId() {
       return localStorage.getItem('doctor_id');
+    },
+    user() {
+      return localStorage.getItem('user');
     }
+  
   },
   methods: {
     logoutUser() {

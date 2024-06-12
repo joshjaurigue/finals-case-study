@@ -330,6 +330,11 @@ router.beforeEach((to, from, next) => {
   const user = JSON.parse(localStorage.getItem('user'))
   const userRole = user?.role
 
+  if ((to.name === 'login' || to.name === 'register') && isAuthenticated) {
+    next(from.fullPath)
+    return
+  }
+
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!isAuthenticated) {
       next({ name: 'login' })

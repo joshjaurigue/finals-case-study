@@ -55,6 +55,10 @@
         </div>
       </div>
     </nav>
+    <br>
+    <div class="container">
+      <h2>Welcome Patient! Here you can book your appointments, view your medical records, and more.</h2>
+     </div>
   </template>
   
   <script>

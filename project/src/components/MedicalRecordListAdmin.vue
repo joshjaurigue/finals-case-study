@@ -116,6 +116,7 @@
 </template>
 
 <script>
+import { BASE_URL } from '@/config';
 import axios from 'axios';
 
 export default {
@@ -148,7 +149,7 @@ export default {
     },
     logoutUser() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
-      axios.post(`${process.env.VUE_APP_BASE_URL}/logout`)
+      axios.post(`${BASE_URL}/logout`)
         .then(() => {
           localStorage.clear();
           this.$router.push('/');

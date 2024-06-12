@@ -76,20 +76,7 @@ class PatientController extends Controller
         }
     }
 
-    // View details of a specific patient's diagnosis
-    public function showDiagnosis(Request $request, $id)
-    {
-        try {
-            // Attempt to find the patient by ID
-            $patient = Patient::findOrFail($id);
-
-            // Return only the diagnosis field as a JSON response
-            return response()->json(['diagnosis' => $patient->diagnosis]);
-        } catch (ModelNotFoundException $e) {
-            // If no patient is found, return a 404 error response
-            return response()->json(['message' => 'Patient not found'], 404);
-        }
-    }
+   
 
     // Update details of a patient
     public function update(Request $request, $id)
@@ -160,21 +147,5 @@ class PatientController extends Controller
         return response()->json($patients);
     }
 
-    // Update patient details
-    public function updateStatus(Request $request, $id)
-    {
-        $request->validate([
-            'diagnosis' => 'required|string|max:255',
-        ]);
-
-        $patient = Patient::findOrFail($id);
-
-        if (!$request->user()->appointments->contains('patient_id', $id)) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $patient->update($request->only(['diagnosis']));
-
-        return response()->json($patient);
-    }
+    
 }

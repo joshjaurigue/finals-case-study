@@ -72,7 +72,7 @@
         <p><strong>Sex:</strong> {{ patient.sex }}</p>
         <p><strong>Address:</strong> {{ patient.address }}</p>
         <p><strong>Phone:</strong> {{ patient.phone }}</p>
-        <p><strong>Diagnosis:</strong> {{ diagnosis }}</p>
+       
       </div>
     </div>
 </template>
@@ -97,9 +97,7 @@ computed: {
   patientId() {
     return localStorage.getItem('patient_id');
   }, 
-  diagnosis() {
-      return this.patient.diagnosis !== null ? this.patient.diagnosis : 'None';
-    }
+
 },
 methods: {
   fetchProfile() {

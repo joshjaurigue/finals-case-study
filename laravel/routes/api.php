@@ -21,7 +21,7 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 // Admin routes
 Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-
+    Route::get('/getAdminRecords', [MedicalRecordController::class, 'getAdminRecords']);
     Route::get('users', [UserController::class, 'index']);
     Route::get('dashboard', [UserController::class, 'getCounts']);
     Route::post('users', [UserController::class, 'store']);
@@ -45,12 +45,12 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
     Route::delete('admin/doctors/{id}', [DoctorController::class, 'destroy']);
     Route::get('admin/appointments', [AppointmentController::class, 'index']);
     Route::get('admin/appointments/{id}', [AppointmentController::class, 'show']);
+  
 });
 
 // Doctor routes
 Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () {
     Route::get('/doctor/myPatients', [PatientController::class, 'patientList']);
-    Route::get('patients/{id}/diagnosis', [PatientController::class, 'showDiagnosis']);
     Route::get('specializations/{id}', [SpecializationController::class, 'show']);
     Route::get('specializations', [SpecializationController::class, 'index']);
     Route::put('patients/{id}', [PatientController::class, 'updateStatus']);
@@ -60,10 +60,14 @@ Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () 
     Route::patch('/doctor/completeAppointment/{id}', [AppointmentController::class, 'updateStatus']);
     Route::delete('/doctor/appointments/{id}', [AppointmentController::class, 'destroy']);
     Route::get('records', [MedicalRecordController::class, 'index']);
-    Route::post('records', [MedicalRecordController::class, 'store']);
-    Route::get('records/{id}', [MedicalRecordController::class, 'show']);
-    Route::put('records/{id}', [MedicalRecordController::class, 'update']);
-    Route::delete('records/{id}', [MedicalRecordController::class, 'destroy']);
+    Route::post('/addRecord', [MedicalRecordController::class, 'store']);
+    Route::get('/getDoctorRecords/{id}', [MedicalRecordController::class, 'getDoctorRecords']);
+    Route::get('/getRecordById/{id}', [MedicalRecordController::class, 'getRecordById']);
+    Route::get('/getPatientsForDoctor', 
+    [MedicalRecordController::class, 'getPatientsForDoctor']);
+    Route::put('/updateRecord/{id}', [MedicalRecordController::class, 'updateRecord']);
+    Route::delete('/deleteRecord/{id}', [MedicalRecordController::class, 'destroy']);
+
 
 });
 
