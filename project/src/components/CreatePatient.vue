@@ -108,13 +108,13 @@
           <div class="text-danger" v-if="errors?.email">{{ errors.email[0] }}</div>
         </div>
         <div class="mb-3">
-          <input type="password" class="form-control" v-model="form.password" placeholder="Enter your Password (Password must be 8 characters or more)" @input="clearErrors('password')">
+          <input :type="showPassword ? 'text' : 'password'" class="form-control" v-model="form.password" placeholder="Enter your Password (Password must be 8 characters or more)" @input="clearErrors('password')">
           <div class="text-danger" v-if="errors?.password">{{ errors.password[0] }}</div>
         </div>
         <div class="mb-3">
-          <input type="password" class="form-control" v-model="form.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password')">
-          <div class="text-danger" v-if="errors?.password_confirmation">{{ errors.password[0] }}</div>
-        </div>
+  <input :type="showConfirmPassword ? 'text' : 'password'" class="form-control" v-model="form.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password_confirmation')">
+  <div class="text-danger" v-if="errors?.password_confirmation">{{ errors.password_confirmation[0] }}</div>
+</div>
         <div class="mb-3">
           <input type="text" class="form-control" v-model="form.first_name" placeholder="First Name" @input="clearErrors('first_name')">
           <div class="text-danger" v-if="errors?.first_name">{{ errors.first_name[0] }}</div>
@@ -155,6 +155,14 @@
           <input type="text" class="form-control" v-model="form.phone" placeholder="Phone" @input="clearErrors('phone')">
           <div class="text-danger" v-if="errors?.phone">{{ errors.phone[0] }}</div>
         </div>
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" id="showPasswordCheck" v-model="showPassword">
+          <label class="form-check-label" for="showPasswordCheck">Show Password</label>
+        </div>
+        <div class="mb-3 form-check">
+  <input type="checkbox" class="form-check-input" id="showConfirmPasswordCheck" v-model="showConfirmPassword">
+  <label class="form-check-label" for="showConfirmPasswordCheck">Show Confirm Password</label>
+</div>
         <button type="submit" class="btn btn-primary w-100">Create Patient</button>
       </form>
     </div>
@@ -168,99 +176,101 @@ import Swal from 'sweetalert2';
 
 
 export default {
-data() {
-  return {
-    form: {
-      name: '',
-      email: '',
-      password: '',
-      password_confirmation: '',
-      first_name: '',
-      middle_name: '',
-      last_name: '',
-      date_of_birth: '',
-      place_of_birth: '',
-      age: '',
-      sex: '',
-      address: '',
-      phone: ''
-    },
-    errors: {}
-  };
-},
-methods: {
-  clearErrors(field) {
-    if (this.errors[field]) {
-      this.errors[field] = null;
-    }
-  },
-  async createPatient() {
-    try {
-      const response = await axios.post(`${BASE_URL}/admin/patients/create`, this.form);
-      if (response.status === 201) {
-        this.clearForm();
-        Swal.fire({
-          icon: 'success',
-          title: 'Patient created successfully!',
-          text: 'You have successfully created a patient.',
-          confirmButtonText: 'OK'
-        }).then(() => {
-          this.$router.push({ name: 'patient-list-admin' });
-        });
-      }
-    } catch (error) {
-      if (error.response && error.response.data) {
-        this.errors = error.response.data.errors;
-        Swal.fire({
-          icon: 'error',
-          title: 'Patient Creation Failed',
-          text: 'Please check your input and try again.',
-          confirmButtonText: 'OK'
-        });
-      } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Patient Creation Failed',
-          text: 'An unexpected error occurred. Please try again.',
-          confirmButtonText: 'OK'
-        }.then(() => {
-          this.$router.push({ name: 'patient-list-admin' });
-        }));
-      }
-    }
-  },
-  clearForm() {
-    this.form = {
-      name: '',
-      email: '',
-      password: '',
-      first_name: '',
-      middle_name: '',
-      last_name: '',
-      date_of_birth: '',
-      place_of_birth: '',
-      age: '',
-      sex: 'Male',
-      address: '',
-      phone: ''
+  data() {
+    return {
+      form: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        date_of_birth: '',
+        place_of_birth: '',
+        age: '',
+        sex: '',
+        address: '',
+        phone: ''
+      },
+      errors: {},
+      showPassword: false,
+      showConfirmPassword: false
     };
-    this.errors = {};
   },
-  logoutUser() {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
+  methods: {
+    clearErrors(field) {
+      if (this.errors[field]) {
+        this.errors[field] = null;
+      }
+    },
+    async createPatient() {
+      try {
+        const response = await axios.post(`${BASE_URL}/admin/patients/create`, this.form);
+        if (response.status === 201) {
+          this.clearForm();
+          Swal.fire({
+            icon: 'success',
+            title: 'Patient created successfully!',
+            text: 'You have successfully created a patient.',
+            confirmButtonText: 'OK'
+          }).then(() => {
+            this.$router.push({ name: 'patient-list-admin' });
+          });
+        }
+      } catch (error) {
+        if (error.response && error.response.data) {
+          this.errors = error.response.data.errors;
+          Swal.fire({
+            icon: 'error',
+            title: 'Patient Creation Failed',
+            text: 'Please check your input and try again.',
+            confirmButtonText: 'OK'
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Patient Creation Failed',
+            text: 'An unexpected error occurred. Please try again.',
+            confirmButtonText: 'OK'
+          }.then(() => {
+            this.$router.push({ name: 'patient-list-admin' });
+          }));
+        }
+      }
+    },
+    clearForm() {
+      this.form = {
+        name: '',
+        email: '',
+        password: '',
+        first_name: '',
+        middle_name: '',
+        last_name: '',
+        date_of_birth: '',
+        place_of_birth: '',
+        age: '',
+        sex: '',
+        address: '',
+        phone: ''
+      };
+      this.errors = {};
+    },
+    logoutUser() {
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
 
-    // Call the logout API
-    axios.post(`${BASE_URL}/logout`)
-      .then(() => {
-        // Clear localStorage
-        localStorage.clear();
-        // Redirect to login page
-        this.$router.push('/');
-      })
-      .catch(error => {
-        console.error('Error logging out:', error);
-      });
+      // Call the logout API
+      axios.post(`${BASE_URL}/logout`)
+        .then(() => {
+          // Clear localStorage
+          localStorage.clear();
+          // Redirect to login page
+          this.$router.push('/');
+        })
+        .catch(error => {
+          console.error('Error logging out:', error);
+        });
+    }
   }
-}
 };
 </script>

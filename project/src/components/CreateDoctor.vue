@@ -108,13 +108,13 @@
     </div>
     <!-- Add password field -->
     <div class="mb-3">
-      <input type="password" class="form-control" v-model="doctor.password" placeholder="Enter Doctor's Password" @input="clearErrors('password')">
-      <div class="text-danger" v-if="errors?.password">{{ errors.password[0] }}</div>
-    </div>
-    <div class="mb-3">
-      <input type="password" class="form-control" v-model="doctor.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password')">
-      <div class="text-danger" v-if="errors?.password_confirmation">{{ errors.password[0] }}</div>
-    </div>
+  <input :type="showPassword ? 'text' : 'password'" class="form-control" v-model="doctor.password" placeholder="Enter Doctor's Password" @input="clearErrors('password')">
+  <div class="text-danger" v-if="errors?.password">{{ errors.password[0] }}</div>
+</div>
+<div class="mb-3">
+  <input :type="showConfirmPassword ? 'text' : 'password'" class="form-control" v-model="doctor.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password_confirmation')">
+  <div class="text-danger" v-if="errors?.password_confirmation">{{ errors.password_confirmation[0] }}</div>
+</div>
     <div class="mb-3">
       <input type="text" class="form-control" v-model="doctor.first_name" placeholder="Enter Doctor's First Name" @input="clearErrors('first_name')">
       <div class="text-danger" v-if="errors?.first_name">{{ errors.first_name[0] }}</div>
@@ -139,6 +139,14 @@
       </select>
       <div class="text-danger" v-if="errors?.specialization_id">{{ errors.specialization_id[0] }}</div>
     </div>
+    <div class="mb-3 form-check">
+  <input type="checkbox" class="form-check-input" id="showPasswordCheck" v-model="showPassword">
+  <label class="form-check-label" for="showPasswordCheck">Show Password</label>
+</div>
+<div class="mb-3 form-check">
+  <input type="checkbox" class="form-check-input" id="showConfirmPasswordCheck" v-model="showConfirmPassword">
+  <label class="form-check-label" for="showConfirmPasswordCheck">Show Confirm Password</label>
+</div>
     <!-- Include other doctor fields here -->
     <button type="submit" class="btn btn-primary w-100">Create Doctor</button>
   </form>
@@ -166,7 +174,9 @@ data() {
       phone_number: ''
     },
     specializations: [], // To store the list of specializations
-    errors: {}
+    errors: {},
+    showPassword: false,
+    showConfirmPassword: false
   };
 },
 created() {
@@ -180,7 +190,7 @@ methods: {
   },
   async fetchSpecializations() {
     try {
-      const response = await axios.get(`${BASE_URL}/specializations`);
+      const response = await axios.get(`${BASE_URL}/admin/specializations`);
       this.specializations = response.data;
     } catch (error) {
       console.error('Failed to fetch specializations:', error);

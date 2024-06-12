@@ -130,7 +130,7 @@
     
     async getSpecializationDetails() {
       try {
-        const response = await axios.get(`${BASE_URL}/specializations/${this.$route.params.id}`);
+        const response = await axios.get(`${BASE_URL}/admin/specializations/${this.$route.params.id}`);
         
         this.specializationTitle = response.data.specialization_data.specialization_title;
         console.log(this.specializationTitle);

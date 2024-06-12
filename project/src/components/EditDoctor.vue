@@ -61,7 +61,6 @@
               <!-- Add more items as needed -->
             </ul>
           </li>
-
     
         </ul>
   
@@ -89,13 +88,25 @@
 
         <!-- Password -->
         <div class="mb-3">
-          <input type="password" class="form-control" v-model="doctor.password" placeholder="Enter Password" @input="clearErrors('password')">
+          <input :type="showPassword ? 'text' : 'password'" class="form-control" v-model="doctor.password" placeholder="Enter Password" @input="clearErrors('password')">
           <div class="text-danger" v-if="errors?.password">{{ errors.password[0] }}</div>
+        </div>
+
+        <!-- Show Password Checkbox -->
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" v-model="showPassword" id="showPassword">
+          <label class="form-check-label" for="showPassword">Show Password</label>
         </div>
 
         <!-- Password Confirmation -->
         <div class="mb-3">
-          <input type="password" class="form-control" v-model="doctor.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password_confirmation')">
+          <input :type="showConfirmPassword ? 'text' : 'password'" class="form-control" v-model="doctor.password_confirmation" placeholder="Confirm Password" @input="clearErrors('password_confirmation')">
+        </div>
+
+        <!-- Show Confirm Password Checkbox -->
+        <div class="mb-3 form-check">
+          <input type="checkbox" class="form-check-input" v-model="showConfirmPassword" id="showConfirmPassword">
+          <label class="form-check-label" for="showConfirmPassword">Show Confirm Password</label>
         </div>
 
         <!-- First Name -->
@@ -134,6 +145,7 @@
   </div>
 </template>
 
+
 <script>
 import { BASE_URL } from '@/config';
 import axios from '@/axios';
@@ -155,7 +167,9 @@ export default {
         phone_number: ''
       },
       specializations: [],
-      errors: {}
+      errors: {},
+      showPassword: false, // To toggle password visibility
+      showConfirmPassword: false // To toggle confirm password visibility
     };
   },
   mounted() {
@@ -227,3 +241,4 @@ export default {
 }
 };
 </script>
+

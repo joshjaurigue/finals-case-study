@@ -84,37 +84,33 @@
         </div>
       </div>
     </nav>
-
-    <!-- Medical Records List -->
-    <div>
-      <h1>Medical Records List</h1>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Patient ID</th>
-            <th>Patient Name</th>
-            <th>Date of Birth</th>
-            <th>Diagnosis</th>
-            <th>Treatment</th>
-            <th>Billing Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="record in records" :key="record.id">
-            <td>{{ record.patient_id }}</td>
-            <td>{{ record.patient_name }}</td>
-            <td>{{ new Date(record.dob).toLocaleDateString() }}</td>
-            <td>{{ record.diagnosis }}</td>
-            <td>{{ record.treatment }}</td>
-            <td>{{ record.billing_status }}</td>
-            <td>
-              <button class="btn btn-info btn-sm" @click="viewDetails(record.id)">View</button>
-              <button class="btn btn-danger btn-sm" @click="deleteRecord(record.id)">Delete</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">All Medical Records</h2>
+      <div v-if="records.length">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Record Type</th>
+              <th>Patient Name</th>
+              <th>Doctor Name</th>
+              <th>Details</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="record in sortedRecords" :key="record.id">
+              <td>{{ record.type }}</td>
+              <td>{{ record.patient_name }}</td>
+              <td>{{ record.doctor_name }}</td>
+              <td>{{ record.record }}</td>
+              <td>{{ formatDate(record.record_date) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div v-else class="text-center">
+        <p>No medical records found.</p>
+      </div>
     </div>
   </div>
 </template>
@@ -129,29 +125,26 @@ export default {
     };
   },
   mounted() {
-    this.fetchRecords();
+    this.fetchMedicalRecords();
   },
   methods: {
-    async fetchRecords() {
-      try {
-        const response = await axios.get('/api/admin/medicalrecords');
-        this.records = response.data;
-      } catch (error) {
-        console.error('There was an error fetching the medical records:', error);
-      }
-    },
-    viewDetails(id) {
-      this.$router.push({ name: 'view-medicalrecord-details', params: { id } });
-    },
-    async deleteRecord(id) {
-      if (confirm('Are you sure you want to delete this record?')) {
-        try {
-          await axios.delete(`/api/admin/medicalrecords/${id}`);
-          this.fetchRecords();
-        } catch (error) {
-          console.error('There was an error deleting the medical record:', error);
+    fetchMedicalRecords() {
+      axios.get(`http://127.0.0.1:8000/api/getAdminRecords/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('auth_token')}`,
+          'Custom-Header': 'CustomHeaderValue'  
         }
-      }
+      })
+      .then(response => {
+        this.records = response.data;
+      })
+      .catch(error => {
+        console.error('Error fetching medical records:', error);
+      });
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
     },
     logoutUser() {
       axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('auth_token')}`;
@@ -163,6 +156,12 @@ export default {
         .catch(error => {
           console.error('Error logging out:', error);
         });
+    }
+  },
+  computed: {
+    sortedRecords() {
+      // Sort records based on doctor's name
+      return this.records.slice().sort((a, b) => a.doctor_name.localeCompare(b.doctor_name));
     }
   }
 };
@@ -184,25 +183,4 @@ th, td {
   border: 1px solid #ddd;
 }
 
-button {
-  padding: 5px 10px;
-}
-
-.btn-info {
-  background-color: #17a2b8;
-  border: none;
-}
-
-.btn-info:hover {
-  background-color: #138496;
-}
-
-.btn-danger {
-  background-color: #dc3545;
-  border: none;
-}
-
-.btn-danger:hover {
-  background-color: #c82333;
-}
 </style>

@@ -57,7 +57,6 @@
             <ul class="dropdown-menu" aria-labelledby="navbarDropdownRecords">
               <!-- Edit the routes manually -->
               <li><router-link class="dropdown-item" :to="{name: 'medical-record-list-doctors'}">Medical Records</router-link></li>
-              <li><router-link class="dropdown-item" :to="{name: 'create-medical-record'}">Create Medical Records</router-link></li>
               <!-- Add more items as needed -->
             </ul>
           </li>
