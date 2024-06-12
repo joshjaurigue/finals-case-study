@@ -20,8 +20,8 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 // Admin routes
 Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
-   
-    Route::get('users', [UserController::class, 'index']); 
+
+    Route::get('users', [UserController::class, 'index']);
     Route::get('dashboard', [UserController::class, 'getCounts']);
     Route::post('users', [UserController::class, 'store']);
     Route::get('users/{id}', [UserController::class, 'show']);
@@ -48,7 +48,7 @@ Route::middleware(['auth:sanctum', AdminMiddleware::class])->group(function () {
 
 // Doctor routes
 Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () {
-    Route::get('my-patients', [PatientController::class, 'patientList']);
+    Route::get('/doctor/myPatients', [PatientController::class, 'patientList']);
     Route::get('patients/{id}/diagnosis', [PatientController::class, 'showDiagnosis']);
     Route::get('specializations/{id}', [SpecializationController::class, 'show']);
     Route::get('specializations', [SpecializationController::class, 'index']);
@@ -56,23 +56,23 @@ Route::middleware(['auth:sanctum', DoctorMiddleware::class])->group(function () 
     Route::get('doctors/my-profile', [DoctorController::class, 'showProfile']);
     Route::put('doctors/update-profile', [DoctorController::class, 'updateProfile']);
     Route::get('/doctor/appointments', [AppointmentController::class, 'doctorAppointments']);
-    Route::patch('/appointments/status/{id}', [AppointmentController::class, 'updateStatus']);
+    Route::patch('/doctor/completeAppointment/{id}', [AppointmentController::class, 'updateStatus']);
     Route::delete('/doctor/appointments/{id}', [AppointmentController::class, 'destroy']);
     Route::get('records', [MedicalRecordController::class, 'index']);
     Route::post('records', [MedicalRecordController::class, 'store']);
     Route::get('records/{id}', [MedicalRecordController::class, 'show']);
     Route::put('records/{id}', [MedicalRecordController::class, 'update']);
     Route::delete('records/{id}', [MedicalRecordController::class, 'destroy']);
-   
 });
 
 // Patient routes
 Route::middleware(['auth:sanctum', PatientMiddleware::class])->group(function () {
+    Route::get('patient/doctors', [DoctorController::class, 'index']);
     Route::get('patients/{id}', [PatientController::class, 'show']);
     Route::get('patient/appointments', [AppointmentController::class, 'patientAppointments']);
-    Route::post('patient/appointments', [AppointmentController::class, 'store']);
-    Route::patch('patient/appointments/reschedule/{id}', [AppointmentController::class, 'update']);
-    Route::patch('patient/appointments/cancel/{id}', [AppointmentController::class, 'cancelAppointment']);
+    Route::post('patient/createAppointments', [AppointmentController::class, 'store']);
+    Route::patch('patient/appointment/reschedule/{id}', [AppointmentController::class, 'rescheduleAppointment']);
+    Route::delete('patient/cancelAppointment/{id}', [AppointmentController::class, 'cancelAppointment']);
     Route::get('patient/records', [MedicalRecordController::class, 'index']);
     Route::put('patient/records/{id}', [MedicalRecordController::class, 'update']);
 });

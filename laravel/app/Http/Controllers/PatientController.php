@@ -3,20 +3,23 @@
 namespace App\Http\Controllers;
 
 namespace App\Http\Controllers;
+
+use App\Models\Appointment;
 use App\Models\User;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PatientController extends Controller
-{   
+{
     // Retrieve all patients
     public function index()
     {
         $patients = Patient::with('user')->get();
         return response()->json($patients);
     }
-    
+
     // Create a new patient
     public function store(Request $request)
     {
@@ -45,7 +48,7 @@ class PatientController extends Controller
         $patient = Patient::create([
             'user_id' => $user->id,
             'first_name' => $request->first_name,
-            'middle_name'=>$request->middle_name,
+            'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
             'date_of_birth' => $request->date_of_birth,
             'place_of_birth' => $request->place_of_birth,
@@ -57,17 +60,16 @@ class PatientController extends Controller
 
         return response()->json($patient, 201);
     }
-    
+
     // View details of a specific patient
     public function show(Request $request, $id)
     {
         try {
             // Attempt to find the patient by ID and load the related user details
             $patient = Patient::with('user')->findOrFail($id);
-    
+
             // Return the patient details as a JSON response
             return response()->json($patient);
-    
         } catch (ModelNotFoundException $e) {
             // If no patient is found, return a 404 error response
             return response()->json(['message' => 'Patient not found'], 404);
@@ -83,13 +85,12 @@ class PatientController extends Controller
 
             // Return only the diagnosis field as a JSON response
             return response()->json(['diagnosis' => $patient->diagnosis]);
-
         } catch (ModelNotFoundException $e) {
             // If no patient is found, return a 404 error response
             return response()->json(['message' => 'Patient not found'], 404);
         }
     }
-    
+
     // Update details of a patient
     public function update(Request $request, $id)
     {
@@ -130,7 +131,7 @@ class PatientController extends Controller
 
         return response()->json($patient, 201);
     }
-    
+
     // Delete a patient
     public function destroy($id)
     {
@@ -143,16 +144,13 @@ class PatientController extends Controller
         return response()->json(null, 204);
     }
 
-
     // View all patients for the doctor
     public function patientList(Request $request)
     {
-        $doctor_id = $request->user()->id;
-        
+        $doctor_id = auth()->user()->doctor->id;
+
         // Retrieve patients associated with the doctor via appointments
-        $patients = Patient::whereHas('appointments', function ($query) use ($doctor_id) {
-            $query->where('doctor_id', $doctor_id);
-        })->with('user')->get();
+        $patients = Appointment::where('doctor_id', $doctor_id)->with('patient')->get();
 
         // Check if any patients are found
         if ($patients->isEmpty()) {
